@@ -4,7 +4,14 @@ import { loadDataFromUrl } from './fileLoaders/loader';
 import { initLoading } from './loading';
 import { isOnMermaidAI } from './migration/domainMigration';
 import { applyMigrations } from './migrations';
-import { initURLSubscription, loadState, updateCodeStore, verifyState } from './state';
+import { deserializeWorkspace, extractWorkspaceData, isWorkspaceHash } from './serde';
+import {
+  initURLSubscription,
+  loadState,
+  loadWorkspaceFromDocs,
+  updateCodeStore,
+  verifyState
+} from './state';
 import { getAnalyticsSafeUrl, initAnalytics, plausible } from './stats';
 
 export const getDomain = (url?: string): string => {
@@ -14,7 +21,26 @@ export const getDomain = (url?: string): string => {
 };
 
 export const loadStateFromURL = (): void => {
-  loadState(window.location.hash.slice(1));
+  const hash = window.location.hash.slice(1);
+
+  if (!hash) {
+    return;
+  }
+
+  if (isWorkspaceHash(hash)) {
+    const workspaceData = extractWorkspaceData(hash);
+    if (workspaceData) {
+      try {
+        const workspace = deserializeWorkspace(workspaceData);
+        loadWorkspaceFromDocs(workspace.docs, workspace.activeDocId);
+        return;
+      } catch (error) {
+        console.error('Failed to load workspace from URL:', error);
+      }
+    }
+  }
+
+  loadState(hash);
 };
 
 export const syncDiagram = (): void => {
@@ -39,7 +65,7 @@ export const initHandler = async (): Promise<void> => {
 export const isMac = navigator.platform.toUpperCase().includes('MAC');
 export const cmdKey = isMac ? 'Cmd' : 'Ctrl';
 export const MCBaseURL = env.isEnabledMermaidChartLinks
-  ? 'https://mermaid.ai' // 'http://localhost:5174'
+  ? 'https://mermaid.ai'
   : 'https://example.com';
 
 const buildUtmParams = ({
@@ -97,7 +123,6 @@ export const copyToClipboard = async (text: string) => {
 function fallbackCopyToClipboard(text: string) {
   const textArea = document.createElement('textarea');
   textArea.value = text;
-  // Make the textarea out of viewport
   textArea.style.position = 'fixed';
   textArea.style.left = '-999999px';
   textArea.style.top = '-999999px';
@@ -107,7 +132,6 @@ function fallbackCopyToClipboard(text: string) {
   textArea.select();
 
   try {
-    // The deprecated but widely supported method
     document.execCommand('copy');
   } catch (error) {
     console.error('Failed to copy:', error);

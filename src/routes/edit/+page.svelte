@@ -13,6 +13,7 @@
   import Preset from '$/components/Preset.svelte';
   import Share from '$/components/Share.svelte';
   import SyncRoughToolbar from '$/components/SyncRoughToolbar.svelte';
+  import TabBar from '$/components/TabBar.svelte';
   import { Button } from '$/components/ui/button';
   import * as Resizable from '$/components/ui/resizable';
   import { Switch } from '$/components/ui/switch';
@@ -103,6 +104,8 @@
       </Button>
     </McWrapper>
   </Navbar>
+
+  <TabBar />
 
   <div class="flex flex-1 flex-col overflow-hidden" bind:clientWidth={width}>
     <div

@@ -105,3 +105,32 @@ export type InputType = Exclude<HTMLInputTypeAttribute, 'file'>;
 export interface EditorProps {
   onUpdate: (text: string) => void;
 }
+
+export interface DocState extends State {
+  id: string;
+  name: string;
+}
+
+export interface ValidatedDocState extends ValidatedState {
+  id: string;
+  name: string;
+}
+
+export interface WorkspaceState {
+  docs: Record<string, DocState>;
+  activeDocId: string;
+}
+
+export type DocEvent =
+  | { type: 'activate'; docId: string }
+  | { type: 'create'; doc: DocState }
+  | { type: 'update'; doc: Partial<DocState> & { id: string } }
+  | { type: 'delete'; docId: string }
+  | { type: 'rename'; docId: string; name: string };
+
+export interface TabItem {
+  id: string;
+  title: string;
+  isActive: boolean;
+  isDirty?: boolean;
+}
