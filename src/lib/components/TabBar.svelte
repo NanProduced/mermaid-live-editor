@@ -119,9 +119,17 @@
             onblur={submitRename} />
         {:else}
           <span
+            role="button"
+            tabindex="0"
             class="min-w-0 flex-1 truncate"
             ondblclick={() => startRename(doc)}
-            title={doc.name}>
+            onkeydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                startRename(doc);
+              }
+            }}
+            title={`${doc.name} (Double-click to rename)`}>
             {doc.name}
           </span>
         {/if}

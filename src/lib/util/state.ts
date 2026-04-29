@@ -71,9 +71,87 @@ interface WorkspaceInputState {
   activeDocId: string;
 }
 
+const isValidWorkspaceState = (data: unknown): data is WorkspaceInputState => {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+  const obj = data as Record<string, unknown>;
+  return (
+    typeof obj.activeDocId === 'string' &&
+    (obj.docs !== null && obj.docs !== undefined)
+  );
+};
+
+const isValidDocState = (data: unknown): data is DocState => {
+  if (!data || typeof data !== 'object') {
+    return false;
+  }
+  const obj = data as Record<string, unknown>;
+  return typeof obj.code === 'string' && typeof obj.mermaid === 'string';
+};
+
+const convertMapToRecord = (map: Map<string, DocState>): Record<string, DocState> => {
+  const record: Record<string, DocState> = {};
+  for (const [key, value] of map.entries()) {
+    record[key] = value;
+  }
+  return record;
+};
+
+const migrateWorkspaceData = (data: unknown): WorkspaceInputState => {
+  if (!data) {
+    return createInitialWorkspaceState();
+  }
+
+  if (isValidWorkspaceState(data)) {
+    if (data.docs instanceof Map) {
+      return {
+        ...data,
+        docs: convertMapToRecord(data.docs)
+      };
+    }
+    if (typeof data.docs === 'object' && data.docs !== null) {
+      return data;
+    }
+  }
+
+  if (isValidDocState(data)) {
+    const docWithId: DocState = {
+      ...data,
+      id: data.id || generateDocId(),
+      name: (data as DocState).name || 'Diagram 1'
+    };
+    return {
+      docs: { [docWithId.id]: docWithId },
+      activeDocId: docWithId.id
+    };
+  }
+
+  return createInitialWorkspaceState();
+};
+
+const createMigratedLocalStorage = () => {
+  const baseStorage = localStorage();
+  return {
+    getValue(key: string): WorkspaceInputState | null {
+      const rawValue = baseStorage.getValue(key as string);
+      if (rawValue === null) {
+        return null;
+      }
+      return migrateWorkspaceData(rawValue);
+    },
+    setValue(key: string, value: WorkspaceInputState): void {
+      baseStorage.setValue(key as string, value);
+    },
+    deleteValue(key: string): void {
+      baseStorage.deleteValue(key as string);
+    }
+  };
+};
+
 export const workspaceInputStore = persist(
   writable<WorkspaceInputState>(createInitialWorkspaceState()),
-  localStorage(),
+  createMigratedLocalStorage(),
   'workspaceStore'
 );
 
