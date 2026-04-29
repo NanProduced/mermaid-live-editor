@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { EditorProps } from '$/types';
   import { env } from '$/util/env';
+  import { parseNodes, findNodeByPosition, type NodeMapping } from '$lib/util/nodeSync';
+  import { setHoveredNode, setParseResult, setSelectedNode, nodeSyncStore } from '$lib/util/nodeSyncStore';
   import { stateStore, urlsStore } from '$/util/state';
   import { logMermaidChartClick } from '$/util/stats';
   import { AIPromptViewZoneManager } from '$lib/util/AIPromptViewZoneManager';
@@ -165,6 +167,12 @@
         renderAIPromptGutterGlyphIcon();
       }
 
+      // Parse nodes for sync when in code mode
+      if (editorMode === 'code') {
+        const parseResult = parseNodes(code);
+        setParseResult(parseResult);
+      }
+
       // Display/clear errors
       monaco.editor.setModelMarkers(model, 'mermaid', errorMarkers);
     });
@@ -176,11 +184,48 @@
 
       lastMouseLine = e.target.position?.lineNumber ?? 0;
       renderAIPromptGutterGlyphIcon();
+
+      // Check if mouse is over a node name
+      if (e.target.position && e.target.range) {
+        const lineNumber = e.target.position.lineNumber;
+        const column = e.target.position.column;
+        const code = editor.getValue();
+        const parseResult = parseNodes(code);
+
+        if (parseResult.success && parseResult.mappings.length > 0) {
+          const node = findNodeByPosition(parseResult.mappings, lineNumber, column, code);
+          setHoveredNode(node);
+        } else {
+          setHoveredNode(null);
+        }
+      } else {
+        setHoveredNode(null);
+      }
     });
 
     editor.onMouseLeave(() => {
       lastMouseLine = 0;
       renderAIPromptGutterGlyphIcon();
+      setHoveredNode(null);
+    });
+
+    // Subscribe to node selection from preview
+    const unsubscribeNodeSync = nodeSyncStore.subscribe((state) => {
+      if (state.selectedNode && editor) {
+        const lineNumber = state.selectedNode.lineNumber;
+        const model = editor.getModel();
+        if (model) {
+          const lineContent = model.getLineContent(lineNumber);
+          const nodeName = state.selectedNode.nodeName;
+          const column = lineContent.indexOf(nodeName) + 1;
+
+          editor.setSelection(new monaco.Range(lineNumber, column, lineNumber, column + nodeName.length));
+          editor.revealLineInCenter(lineNumber);
+          editor.focus();
+        }
+        // Clear selection after handling
+        setSelectedNode(null);
+      }
     });
 
     const unsubscribeMode = mode.subscribe((mode) => {
@@ -205,6 +250,7 @@
     return () => {
       unsubscribeState();
       unsubscribeMode();
+      unsubscribeNodeSync();
       resizeObserver.disconnect();
       jsonModel.dispose();
       mermaidModel.dispose();
