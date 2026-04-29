@@ -1,4 +1,4 @@
-import type { State } from '$lib/types';
+import type { DocState, State } from '$lib/types';
 import { fromBase64, fromUint8Array, toBase64, toUint8Array } from 'js-base64';
 import { deflate, inflate } from 'pako';
 
@@ -60,4 +60,47 @@ export const deserializeState = (state: string): State => {
   }
   const json = serdes[type].deserialize(serialized);
   return JSON.parse(json) as State;
+};
+
+export interface WorkspaceSerdeData {
+  docs: DocState[];
+  activeDocId: string;
+}
+
+export const serializeWorkspace = (workspace: WorkspaceSerdeData, serde: SerdeType = 'pako'): string => {
+  if (!(serde in serdes)) {
+    throw new Error(`Unknown serde type: ${serde}`);
+  }
+  const json = JSON.stringify(workspace);
+  const serialized = serdes[serde].serialize(json);
+  return `${serde}:${serialized}`;
+};
+
+export const deserializeWorkspace = (data: string): WorkspaceSerdeData => {
+  let type: SerdeType, serialized: string;
+  if (data.includes(':')) {
+    let tempType: string;
+    [tempType, serialized] = data.split(':');
+    if (tempType in serdes) {
+      type = tempType as SerdeType;
+    } else {
+      throw new Error(`Unknown serde type: ${tempType}`);
+    }
+  } else {
+    type = 'base64';
+    serialized = data;
+  }
+  const json = serdes[type].deserialize(serialized);
+  return JSON.parse(json) as WorkspaceSerdeData;
+};
+
+export const isWorkspaceHash = (hash: string): boolean => {
+  return hash.startsWith('docs=');
+};
+
+export const extractWorkspaceData = (hash: string): string | null => {
+  if (isWorkspaceHash(hash)) {
+    return hash.slice('docs='.length);
+  }
+  return null;
 };

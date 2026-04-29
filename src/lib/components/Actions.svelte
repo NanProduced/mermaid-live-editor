@@ -4,21 +4,32 @@
   import CopyInput from '$/components/CopyInput.svelte';
   import ExternalLinkWrapper from '$/components/ExternalLinkWrapper.svelte';
   import { Button } from '$/components/ui/button';
+  import * as Dialog from '$/components/ui/dialog';
   import { Input } from '$/components/ui/input';
   import { Separator } from '$/components/ui/separator';
+  import { Switch } from '$/components/ui/switch';
   import * as ToggleGroup from '$/components/ui/toggle-group';
   import { TID } from '$/constants';
   import { getDomain } from '$/util/util';
   import { browser } from '$app/environment';
   import { waitForRender } from '$lib/util/autoSync';
-  import { inputStateStore, stateStore, urlsStore } from '$lib/util/state';
+  import {
+    exportWorkspaceAsMarkdown,
+    importWorkspaceFromMarkdown,
+    inputStateStore,
+    stateStore,
+    urlsStore,
+    workspaceStore
+  } from '$lib/util/state';
   import { logEvent } from '$lib/util/stats';
   import { version as FAVersion } from '@fortawesome/fontawesome-free/package.json';
   import dayjs from 'dayjs';
   import { toBase64 } from 'js-base64';
   import DownloadIcon from '~icons/material-symbols/download';
+  import UploadIcon from '~icons/material-symbols/upload-rounded';
   import ExternalLinkIcon from '~icons/material-symbols/open-in-new-rounded';
   import WidthIcon from '~icons/material-symbols/width-rounded';
+  import CloseIcon from '~icons/material-symbols/close-rounded';
 
   const FONT_AWESOME_URL = `https://cdnjs.cloudflare.com/ajax/libs/font-awesome/${FAVersion}/css/all.min.css`;
 
@@ -244,6 +255,52 @@ ${svgString}`);
   let imageSize = $state(1080);
 
   const isNetlify = browser && window.location.host.includes('netlify');
+
+  let showImportDialog = $state(false);
+  let importMarkdown = $state('');
+  let importReplaceExisting = $state(false);
+
+  const onExportWorkspace = () => {
+    const markdown = exportWorkspaceAsMarkdown();
+    const blob = new Blob([markdown], { type: 'text/markdown' });
+    const url = URL.createObjectURL(blob);
+    simulateDownload(`mermaid-workspace-${dayjs().format('YYYY-MM-DD-HHmmss')}.md`, url);
+    URL.revokeObjectURL(url);
+    logEvent('exportWorkspace');
+  };
+
+  const onImportWorkspace = () => {
+    showImportDialog = true;
+    importMarkdown = '';
+    importReplaceExisting = false;
+  };
+
+  const handleImport = () => {
+    if (!importMarkdown.trim()) {
+      alert('Please paste your markdown content first');
+      return;
+    }
+    const docs = importWorkspaceFromMarkdown(importMarkdown, importReplaceExisting);
+    if (docs.length === 0) {
+      alert('No mermaid diagrams found in the provided markdown');
+      return;
+    }
+    showImportDialog = false;
+    logEvent('importWorkspace', { count: docs.length });
+  };
+
+  const handleFileSelect = (event: Event) => {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const content = e.target?.result as string;
+      importMarkdown = content;
+    };
+    reader.readAsText(file);
+  };
 </script>
 
 {#snippet dualActionButton(text: string, download: (event: Event) => unknown, url?: string)}
@@ -295,6 +352,19 @@ ${svgString}`);
       </ExternalLinkWrapper>
     </div>
     <Separator />
+    {#if $workspaceStore && Object.keys($workspaceStore.docs).length > 1}
+      <div class="flex gap-2">
+        <Button variant="outline" onclick={onExportWorkspace} class="flex-1">
+          <DownloadIcon class="h-4 w-4" />
+          Export Workspace
+        </Button>
+        <Button variant="outline" onclick={onImportWorkspace} class="flex-1">
+          <UploadIcon class="h-4 w-4" />
+          Import Workspace
+        </Button>
+      </div>
+      <Separator />
+    {/if}
     {#if isClipboardAvailable()}
       <CopyButton onclick={onCopyClipboard} label="Copy Image" />
     {/if}
@@ -317,3 +387,77 @@ ${svgString}`);
     {/if}
   </div>
 </Card>
+
+<Dialog.Root bind:open={showImportDialog}>
+  <Dialog.Portal>
+    <Dialog.Overlay class="fixed inset-0 z-50 bg-black/50" />
+    <Dialog.Content
+      class="fixed top-1/2 left-1/2 z-50 w-full max-w-2xl -translate-x-1/2 -translate-y-1/2 rounded-lg bg-background p-6 shadow-lg">
+      <Dialog.Header>
+        <Dialog.Title class="flex items-center justify-between text-xl">
+          <span>Import Workspace</span>
+          <Dialog.Close asChild>
+            <Button variant="ghost" size="icon" class="h-8 w-8">
+              <CloseIcon class="h-4 w-4" />
+            </Button>
+          </Dialog.Close>
+        </Dialog.Title>
+        <Dialog.Description>
+          Paste markdown content containing mermaid code blocks, or select a .md file to import.
+        </Dialog.Description>
+      </Dialog.Header>
+
+      <div class="mt-4 flex flex-col gap-4">
+        <div class="flex gap-2">
+          <Button
+            variant="outline"
+            class="flex-1"
+            onclick={() => document.getElementById('workspace-file-input')?.click()}>
+            <UploadIcon class="mr-2 h-4 w-4" />
+            Select File
+          </Button>
+          <input
+            id="workspace-file-input"
+            type="file"
+            accept=".md,.markdown"
+            class="hidden"
+            onchange={handleFileSelect} />
+        </div>
+
+        <div class="relative">
+          <textarea
+            bind:value={importMarkdown}
+            placeholder="Paste your markdown content here...
+
+Example:
+# My Diagram
+\`\`\`mermaid
+flowchart TD
+    A --> B
+\`\`\`
+
+# Another Diagram
+\`\`\`mermaid
+sequenceDiagram
+    Alice->>Bob: Hello
+\`\`\`"
+            class="h-64 w-full rounded-md border border-input bg-background p-3 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none" />
+        </div>
+
+        <div class="flex items-center gap-3">
+          <Switch id="replace-existing" bind:checked={importReplaceExisting} />
+          <label for="replace-existing" class="text-sm">
+            Replace existing diagrams (unchecked = append)
+          </label>
+        </div>
+      </div>
+
+      <Dialog.Footer class="mt-6 flex justify-end gap-2">
+        <Dialog.Close asChild>
+          <Button variant="outline">Cancel</Button>
+        </Dialog.Close>
+        <Button onclick={handleImport}>Import</Button>
+      </Dialog.Footer>
+    </Dialog.Content>
+  </Dialog.Portal>
+</Dialog.Root>
