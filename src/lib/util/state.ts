@@ -10,6 +10,7 @@ import type {
 import { debounce, get as lodashGet } from 'lodash-es';
 import type { MermaidConfig } from 'mermaid';
 import { derived, get, writable, type Readable } from 'svelte/store';
+import { v4 as uuidV4 } from 'uuid';
 import { env } from './env';
 import {
   extractErrorLineText,
@@ -21,8 +22,7 @@ import { localStorage, persist } from './persist';
 import { deserializeState, pakoSerde, serializeState, serializeWorkspace } from './serde';
 import { errorDebug, formatJSON, getUTMSource, MCBaseURL } from './util';
 
-let docCounter = 0;
-const generateDocId = (): string => `doc_${++docCounter}_${Date.now()}`;
+const generateDocId = (): string => `doc_${uuidV4()}`;
 
 export const defaultState: State = {
   code: `flowchart TD
@@ -333,25 +333,19 @@ export const inputStateStore = (() => {
 })();
 
 export const currentState: ValidatedState = (() => {
-  const state = getActiveDoc();
-  return {
-    ...state,
-    editorMode: state.editorMode ?? 'code',
-    error: undefined,
-    errorMarkers: [],
-    serialized: serializeState(state)
-  };
+  const defaultWorkspace = createDefaultValidatedWorkspaceState();
+  return defaultWorkspace.activeDoc;
 })();
 
 export const stateStore: Readable<ValidatedState> = derived(
   [workspaceStore],
   ([workspace]) => {
     if (!workspace || !workspace.activeDoc) {
-      return currentState;
+      return createDefaultValidatedWorkspaceState().activeDoc;
     }
     return workspace.activeDoc;
   },
-  currentState
+  createDefaultValidatedWorkspaceState().activeDoc
 );
 
 const createDefaultUrls = () => {
