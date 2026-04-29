@@ -441,7 +441,8 @@ flowchart TD
 sequenceDiagram
     Alice->>Bob: Hello
 \`\`\`"
-            class="h-64 w-full rounded-md border border-input bg-background p-3 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none" />
+            class="h-64 w-full rounded-md border border-input bg-background p-3 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
+          ></textarea>
         </div>
 
         <div class="flex items-center gap-3">
