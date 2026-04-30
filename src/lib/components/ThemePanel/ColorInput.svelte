@@ -2,7 +2,7 @@
   import { Button } from '$/components/ui/button';
   import { Input } from '$/components/ui/input';
   import { cn } from '$/utils';
-  import { adjustContrast, checkContrast } from '$lib/util/colorUtils';
+  import { adjustContrast, checkContrast, type ContrastResult } from '$lib/util/colorUtils';
   import { toast } from 'svelte-sonner';
 
   let {
@@ -29,7 +29,7 @@
     inputValue = value;
   });
 
-  const contrastInfo = $derived(() => {
+  const contrastInfo = $derived((): ContrastResult | null => {
     if (!contrastWith || !value || !contrastWith) {
       return null;
     }
@@ -61,8 +61,8 @@
     toast.success('已调整对比度至符合WCAG标准');
   };
 
-  const getContrastBadgeClass = () => {
-    const info = contrastInfo();
+  const getContrastBadgeClass = (): string => {
+    const info = contrastInfo;
     if (!info) return '';
     if (info.level === 'AAA') return 'bg-green-500';
     if (info.level === 'AA') return 'bg-blue-500';
@@ -73,10 +73,10 @@
 <div class="flex flex-col gap-1">
   <div class="flex items-center justify-between">
     <label for={inputId} class="text-sm font-medium text-foreground">{label}</label>
-    {#if contrastInfo()}
+    {#if contrastInfo}
       <span class={cn('flex items-center gap-1 text-xs text-white', getContrastBadgeClass(), 'px-2 py-0.5 rounded')}>
-        {contrastInfo()?.ratio}:1
-        <span class="font-semibold">{contrastInfo()?.level}</span>
+        {contrastInfo.ratio}:1
+        <span class="font-semibold">{contrastInfo.level}</span>
       </span>
     {/if}
   </div>
@@ -96,7 +96,7 @@
       {disabled}
       class="font-mono text-sm"
     />
-    {#if showContrastFix && contrastInfo() && !contrastInfo()?.isAccessible}
+    {#if showContrastFix && contrastInfo && !contrastInfo.isAccessible}
       <Button size="sm" variant="outline" onclick={fixContrast} class="shrink-0">
         修复
       </Button>

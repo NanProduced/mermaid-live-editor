@@ -22,11 +22,11 @@
     saveCurrentTheme,
     setBackgroundColor,
     setBuiltinTheme,
+    setMultipleThemeVariables,
     setThemeVariable,
     themeStore,
     updateSavedThemeName
   } from '$lib/util/themeStore';
-  import { mode } from 'mode-watcher';
   import { toast } from 'svelte-sonner';
   import ColorInput from './ColorInput.svelte';
   import ImageColorExtractor from './ImageColorExtractor.svelte';
@@ -91,11 +91,7 @@
     }
 
     setBuiltinTheme(result.mermaidTheme);
-    for (const [key, value] of Object.entries(result.themeVariables)) {
-      if (value) {
-        setThemeVariable(key as keyof ThemeVariables, value as string);
-      }
-    }
+    setMultipleThemeVariables(result.themeVariables);
     setBackgroundColor(result.backgroundColor);
 
     importDialogOpen = false;
@@ -125,10 +121,29 @@
     saveDialogOpen = false;
   };
 
-  const groupedColors = $derived(() => {
-    const state = $themeStore;
-    const contrastInfo = getColorContrastInfo;
-    const groups: Record<string, { key: keyof ThemeVariables; label: string; value: string; contrastInfo?: unknown }[]> = {
+  const getCategoryLabel = (category: string): string => {
+    switch (category) {
+      case 'primary':
+        return '主色';
+      case 'secondary':
+        return '次色';
+      case 'tertiary':
+        return '第三色';
+      case 'text':
+        return '文字';
+      case 'lines':
+        return '线条';
+      default:
+        return '其他';
+    }
+  };
+
+  const getColorValue = (key: keyof ThemeVariables): string | undefined => {
+    return $themeStore.themeVariables[key] as string | undefined;
+  };
+
+  const getAllCategories = (): Record<string, typeof colorCategories> => {
+    const result: Record<string, typeof colorCategories> = {
       primary: [],
       secondary: [],
       tertiary: [],
@@ -138,22 +153,30 @@
     };
 
     for (const category of colorCategories) {
-      const value = state.themeVariables[category.key] as string | undefined;
-      if (value) {
-        const info = contrastInfo.get(category.key);
-        groups[category.category].push({
-          key: category.key,
-          label: category.label,
-          value,
-          contrastInfo: info
-        });
-      }
+      result[category.category].push(category);
     }
 
-    return groups;
-  });
+    return result;
+  };
 
-  const hasCustomColors = $derived(() => Object.keys($themeStore.themeVariables).length > 0);
+  const addDefaultColors = () => {
+    const defaultVars: ThemeVariables = {
+      primaryColor: '#fff4dd',
+      primaryTextColor: '#333333',
+      secondaryColor: '#ffcc88',
+      secondaryTextColor: '#333333',
+      tertiaryColor: '#99eeff',
+      tertiaryTextColor: '#333333',
+      lineColor: '#333333',
+      textColor: '#333333'
+    };
+    setMultipleThemeVariables(defaultVars);
+    toast.success('已添加默认颜色变量');
+  };
+
+  const hasAnyColor = $derived(() => {
+    return Object.keys($themeStore.themeVariables).length > 0;
+  });
 </script>
 
 <Card title="主题设置" isOpen={true} icon={{ component: ContrastIcon, class: 'size-5' }}>
@@ -201,33 +224,21 @@
 
         <Separator />
 
-        {#each Object.entries(groupedColors) as [category, colors]}
+        {#each Object.entries(getAllCategories()) as [category, colors]}
           {#if colors.length > 0}
             <div class="flex flex-col gap-2">
               <h4 class="text-sm font-semibold capitalize text-foreground">
-                {category === 'primary'
-                  ? '主色'
-                  : category === 'secondary'
-                    ? '次色'
-                    : category === 'tertiary'
-                      ? '第三色'
-                      : category === 'text'
-                        ? '文字'
-                        : category === 'lines'
-                          ? '线条'
-                          : '其他'}
+                {getCategoryLabel(category)}
               </h4>
               <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 {#each colors as color}
+                  {@const currentValue = getColorValue(color.key)}
                   <ColorInput
                     label={color.label}
-                    value={color.value}
+                    value={currentValue || '#000000'}
                     onChange={(c) => setThemeVariable(color.key, c)}
-                    contrastWith={$themeStore.themeVariables[
-                      colorCategories.find((cat) => cat.key === color.key)
-                        ?.contrastWith as keyof ThemeVariables
-                    ]}
-                    showContrastFix={true}
+                    contrastWith={color.contrastWith ? getColorValue(color.contrastWith) : undefined}
+                    showContrastFix={!!color.contrastWith && !!currentValue}
                   />
                 {/each}
               </div>
@@ -235,29 +246,10 @@
           {/if}
         {/each}
 
-        {#if !hasCustomColors}
-          <div class="flex flex-col items-center gap-2 py-4 text-center">
-            <p class="text-sm text-muted-foreground">
-              目前没有自定义颜色
-            </p>
-            <p class="text-xs text-muted-foreground">
-              选择预设配色或添加自定义颜色变量
-            </p>
-          </div>
-        {/if}
-
         <Separator />
 
         <div class="flex flex-wrap gap-2">
-          <Button
-            variant="outline"
-            onclick={() => {
-              setThemeVariable('primaryColor', '#fff4dd');
-              setThemeVariable('secondaryColor', '#ffcc88');
-              setThemeVariable('tertiaryColor', '#99eeff');
-              setThemeVariable('lineColor', '#333333');
-              setThemeVariable('textColor', '#333333');
-            }}>
+          <Button variant="outline" onclick={addDefaultColors}>
             添加默认颜色变量
           </Button>
           <Button variant="outline" onclick={resetToDefaults}>
