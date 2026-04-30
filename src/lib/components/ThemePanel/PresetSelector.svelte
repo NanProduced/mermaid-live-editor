@@ -18,8 +18,9 @@
   {#each presets as preset}
     <button
       onclick={() => onSelect(preset.id)}
+      disabled={activePresetId === preset.id}
       class={cn(
-        'flex flex-col items-start gap-1 rounded-lg border-2 p-3 text-left transition-all hover:border-primary',
+        'flex flex-col items-start gap-1 rounded-lg border-2 p-3 text-left transition-all hover:border-primary disabled:cursor-default',
         activePresetId === preset.id
           ? 'border-primary bg-primary/10'
           : 'border-border bg-background'

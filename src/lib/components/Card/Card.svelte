@@ -78,7 +78,7 @@
     {/if}
   </div>
   {#if isOpen}
-    <div class="flex-grow overflow-x-auto" transition:slide={{ easing: quintOut }}>
+    <div class="flex-grow max-h-[500px] overflow-y-auto" transition:slide={{ easing: quintOut }}>
       {@render children()}
     </div>
   {/if}
