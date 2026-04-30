@@ -22,16 +22,16 @@ function getSvgSelector(nodeName: string, diagramType: string): string {
   const escapedName = escapeRegExp(nodeName);
   switch (diagramType) {
     case 'flowchart':
-      return `[id*="${escapedName}"]`;
+      return `.node[id*="${escapedName}"]`;
     case 'classDiagram':
-      return `[class*="${escapedName}"]`;
+      return `.node[class*="${escapedName}"]`;
     case 'sequenceDiagram':
-      return `[id*="${escapedName}"]`;
+      return `.actor[id*="${escapedName}"], .participant[id*="${escapedName}"]`;
     case 'stateDiagram':
     case 'stateDiagram-v2':
-      return `[id*="${escapedName}"]`;
+      return `.state[id*="${escapedName}"]`;
     case 'erDiagram':
-      return `[id*="${escapedName}"]`;
+      return `.entity.${escapedName}`;
     default:
       return `[id*="${escapedName}"]`;
   }
@@ -41,45 +41,54 @@ function isValidNodeName(name: string): boolean {
   return /^[A-Za-z][\w-]*$/.test(name);
 }
 
+const reservedKeywords = new Set([
+  'flowchart', 'graph', 'classDiagram', 'sequenceDiagram',
+  'stateDiagram', 'stateDiagram-v2', 'erDiagram',
+  'TD', 'LR', 'TB', 'BT', 'RL',
+  'participant', 'actor', 'class', 'state',
+  'title', 'direction'
+]);
+
+function isReservedKeyword(word: string): boolean {
+  return reservedKeywords.has(word);
+}
+
 function extractFlowchartNodes(line: string, lineNumber: number, mappings: NodeMapping[], existingNames: Set<string>): void {
-  const nodePattern = /[A-Za-z][\w-]*/g;
-  const arrowPattern = /(-->|---|==>|-\.->|-\.\->)/;
-  const shapePattern = /(\[.*?\]|\(.*?\)|\{.*?\}|>.*?\]|\/\/.*?\/\/\|>\(.*?\)|\[\[.*?\]\]|\(\(.*?\)\)|{\/.*?\/})/g;
-
-  const shapeMatches: { start: number; end: number }[] = [];
-  let shapeMatch;
-  while ((shapeMatch = shapePattern.exec(line)) !== null) {
-    shapeMatches.push({ start: shapeMatch.index, end: shapeMatch.index + shapeMatch[0].length });
-  }
-
-  const arrowMatch = arrowPattern.exec(line);
-  const arrowIndex = arrowMatch ? arrowMatch.index : -1;
+  const nodeBeforeShapePattern = /([A-Za-z][\w-]*)\s*(\[|\(|\{|>|\/\/|\[\[|\(\(|\{\/)/g;
+  const nodeBeforeArrowPattern = /([A-Za-z][\w-]*)\s*(-->|---|==>|-\.->|-\.\->)/g;
+  const nodeAfterArrowPattern = /(-->|---|==>|-\.->|-\.\->)\s*([A-Za-z][\w-]*)/g;
 
   let match;
-  while ((match = nodePattern.exec(line)) !== null) {
-    const nodeName = match[0];
-    const nodeStart = match.index;
-    const nodeEnd = nodeStart + nodeName.length;
 
-    if (!isValidNodeName(nodeName)) {
-      continue;
+  while ((match = nodeBeforeShapePattern.exec(line)) !== null) {
+    const nodeName = match[1];
+    if (nodeName && !existingNames.has(nodeName) && !isReservedKeyword(nodeName)) {
+      mappings.push({
+        lineNumber,
+        nodeName,
+        svgSelector: getSvgSelector(nodeName, 'flowchart'),
+        diagramType: 'flowchart'
+      });
+      existingNames.add(nodeName);
     }
+  }
 
-    if (existingNames.has(nodeName)) {
-      continue;
+  while ((match = nodeBeforeArrowPattern.exec(line)) !== null) {
+    const nodeName = match[1];
+    if (nodeName && !existingNames.has(nodeName) && !isReservedKeyword(nodeName)) {
+      mappings.push({
+        lineNumber,
+        nodeName,
+        svgSelector: getSvgSelector(nodeName, 'flowchart'),
+        diagramType: 'flowchart'
+      });
+      existingNames.add(nodeName);
     }
+  }
 
-    const inShape = shapeMatches.some((s) => nodeStart >= s.start && nodeEnd <= s.end);
-    if (inShape) {
-      continue;
-    }
-
-    const followedByShape = shapeMatches.some((s) => s.start > nodeEnd && s.start - nodeEnd <= 3);
-    const beforeArrow = arrowIndex === -1 || nodeEnd <= arrowIndex;
-    const afterArrowWithShape = arrowIndex !== -1 && nodeStart > arrowIndex && followedByShape;
-    const standaloneAfterArrow = arrowIndex !== -1 && nodeStart > arrowIndex;
-
-    if (followedByShape || beforeArrow || afterArrowWithShape || standaloneAfterArrow) {
+  while ((match = nodeAfterArrowPattern.exec(line)) !== null) {
+    const nodeName = match[2];
+    if (nodeName && !existingNames.has(nodeName) && !isReservedKeyword(nodeName)) {
       mappings.push({
         lineNumber,
         nodeName,
@@ -94,7 +103,8 @@ function extractFlowchartNodes(line: string, lineNumber: number, mappings: NodeM
 function extractClassDiagramNodes(line: string, lineNumber: number, mappings: NodeMapping[], existingNames: Set<string>): void {
   const classDefinitionPattern = /^(\s*)class\s+([A-Za-z][\w-]*)/;
   const relationPattern = /([A-Za-z][\w-]*)\s*(--|--\*|--o|--\||\.\.|\.\.\*|\.\.o|\.\.\|)/g;
-  const memberPattern = /^(\s*)([A-Za-z][\w-]*)\s*:/;
+  const relationRightPattern = /(--|--\*|--o|--\||\.\.|\.\.\*|\.\.o|\.\.\|)\s*([A-Za-z][\w-]*)/g;
+  const classMemberStartPattern = /^(\s*)([A-Za-z][\w-]*)\s*\{/;
 
   let match = classDefinitionPattern.exec(line);
   if (match && !existingNames.has(match[2])) {
@@ -107,9 +117,20 @@ function extractClassDiagramNodes(line: string, lineNumber: number, mappings: No
     existingNames.add(match[2]);
   }
 
+  match = classMemberStartPattern.exec(line);
+  if (match && !existingNames.has(match[2])) {
+    mappings.push({
+      lineNumber,
+      nodeName: match[2],
+      svgSelector: getSvgSelector(match[2], 'classDiagram'),
+      diagramType: 'classDiagram'
+    });
+    existingNames.add(match[2]);
+  }
+
   while ((match = relationPattern.exec(line)) !== null) {
     const nodeName = match[1];
-    if (nodeName && !existingNames.has(nodeName)) {
+    if (nodeName && !existingNames.has(nodeName) && !isReservedKeyword(nodeName)) {
       mappings.push({
         lineNumber,
         nodeName,
@@ -120,21 +141,24 @@ function extractClassDiagramNodes(line: string, lineNumber: number, mappings: No
     }
   }
 
-  match = memberPattern.exec(line);
-  if (match && !existingNames.has(match[2])) {
-    mappings.push({
-      lineNumber,
-      nodeName: match[2],
-      svgSelector: getSvgSelector(match[2], 'classDiagram'),
-      diagramType: 'classDiagram'
-    });
-    existingNames.add(match[2]);
+  while ((match = relationRightPattern.exec(line)) !== null) {
+    const nodeName = match[2];
+    if (nodeName && !existingNames.has(nodeName) && !isReservedKeyword(nodeName)) {
+      mappings.push({
+        lineNumber,
+        nodeName,
+        svgSelector: getSvgSelector(nodeName, 'classDiagram'),
+        diagramType: 'classDiagram'
+      });
+      existingNames.add(nodeName);
+    }
   }
 }
 
 function extractSequenceDiagramNodes(line: string, lineNumber: number, mappings: NodeMapping[], existingNames: Set<string>): void {
   const participantPattern = /^(\s*)(participant|actor)\s+([A-Za-z][\w-]*)/;
   const messagePattern = /([A-Za-z][\w-]*)\s*(-+>|->>|-->|-->>|x>|x>>|\\|o\\|)/g;
+  const messageRightPattern = /(-+>|->>|-->|-->>|x>|x>>|\\|o\\|)\s*([A-Za-z][\w-]*)/g;
 
   let match = participantPattern.exec(line);
   if (match && !existingNames.has(match[3])) {
@@ -149,7 +173,20 @@ function extractSequenceDiagramNodes(line: string, lineNumber: number, mappings:
 
   while ((match = messagePattern.exec(line)) !== null) {
     const nodeName = match[1];
-    if (nodeName && !existingNames.has(nodeName)) {
+    if (nodeName && !existingNames.has(nodeName) && !isReservedKeyword(nodeName)) {
+      mappings.push({
+        lineNumber,
+        nodeName,
+        svgSelector: getSvgSelector(nodeName, 'sequenceDiagram'),
+        diagramType: 'sequenceDiagram'
+      });
+      existingNames.add(nodeName);
+    }
+  }
+
+  while ((match = messageRightPattern.exec(line)) !== null) {
+    const nodeName = match[2];
+    if (nodeName && !existingNames.has(nodeName) && !isReservedKeyword(nodeName)) {
       mappings.push({
         lineNumber,
         nodeName,
@@ -164,6 +201,7 @@ function extractSequenceDiagramNodes(line: string, lineNumber: number, mappings:
 function extractStateDiagramNodes(line: string, lineNumber: number, mappings: NodeMapping[], existingNames: Set<string>): void {
   const stateDefinitionPattern = /^(\s*)state\s+"?([A-Za-z][\w-]*)"?/;
   const transitionPattern = /([A-Za-z][\w-]*)\s*-->/g;
+  const transitionRightPattern = /-->\s*([A-Za-z][\w-]*)/g;
   const startTransitionPattern = /^(\s*)\[\*\]\s*-->\s*([A-Za-z][\w-]*)/;
   const endTransitionPattern = /^(\s*)([A-Za-z][\w-]*)\s*-->\s*\[\*\]/;
 
@@ -180,7 +218,20 @@ function extractStateDiagramNodes(line: string, lineNumber: number, mappings: No
 
   while ((match = transitionPattern.exec(line)) !== null) {
     const nodeName = match[1];
-    if (nodeName && !existingNames.has(nodeName)) {
+    if (nodeName && !existingNames.has(nodeName) && !isReservedKeyword(nodeName)) {
+      mappings.push({
+        lineNumber,
+        nodeName,
+        svgSelector: getSvgSelector(nodeName, 'stateDiagram'),
+        diagramType: 'stateDiagram'
+      });
+      existingNames.add(nodeName);
+    }
+  }
+
+  while ((match = transitionRightPattern.exec(line)) !== null) {
+    const nodeName = match[1];
+    if (nodeName && !existingNames.has(nodeName) && !isReservedKeyword(nodeName)) {
       mappings.push({
         lineNumber,
         nodeName,
@@ -215,36 +266,39 @@ function extractStateDiagramNodes(line: string, lineNumber: number, mappings: No
 }
 
 function extractErDiagramNodes(line: string, lineNumber: number, mappings: NodeMapping[], existingNames: Set<string>): void {
-  const entityRelationPattern = /^(\s*)([A-Za-z][\w-]*)\s*([}|][o|]?|--|\.\.)[o|]?[{|]?\s*([A-Za-z][\w-]*)/;
   const entityDefinitionPattern = /^(\s*)([A-Za-z][\w-]*)\s*\{/;
 
-  let match = entityRelationPattern.exec(line);
-  if (match) {
-    const entity1 = match[2];
-    const entity2 = match[4];
+  if (line.includes('--') || line.includes('..')) {
+    const wordPattern = /[A-Za-z][\w-]*/g;
+    const words: { word: string; index: number }[] = [];
+    let match;
 
-    if (entity1 && !existingNames.has(entity1)) {
-      mappings.push({
-        lineNumber,
-        nodeName: entity1,
-        svgSelector: getSvgSelector(entity1, 'erDiagram'),
-        diagramType: 'erDiagram'
-      });
-      existingNames.add(entity1);
+    while ((match = wordPattern.exec(line)) !== null) {
+      words.push({ word: match[0], index: match.index });
     }
 
-    if (entity2 && !existingNames.has(entity2)) {
+    for (const { word } of words) {
+      if (!isValidNodeName(word)) {
+        continue;
+      }
+      if (existingNames.has(word)) {
+        continue;
+      }
+      if (isReservedKeyword(word)) {
+        continue;
+      }
+
       mappings.push({
         lineNumber,
-        nodeName: entity2,
-        svgSelector: getSvgSelector(entity2, 'erDiagram'),
+        nodeName: word,
+        svgSelector: getSvgSelector(word, 'erDiagram'),
         diagramType: 'erDiagram'
       });
-      existingNames.add(entity2);
+      existingNames.add(word);
     }
   }
 
-  match = entityDefinitionPattern.exec(line);
+  let match = entityDefinitionPattern.exec(line);
   if (match && !existingNames.has(match[2])) {
     mappings.push({
       lineNumber,
@@ -409,14 +463,52 @@ export function findNodeByPosition(
   return null;
 }
 
-export function findNodeBySvgId(mappings: NodeMapping[], svgId: string): NodeMapping | null {
+export function findNodeBySvgId(mappings: NodeMapping[], svgId: string, element: HTMLElement | SVGElement | null = null): NodeMapping | null {
+  let bestMatch: NodeMapping | null = null;
+  let longestMatchLength = 0;
+
   for (const mapping of mappings) {
-    if (svgId.includes(mapping.nodeName)) {
-      return mapping;
+    let isMatch = false;
+
+    if (mapping.diagramType === 'flowchart') {
+      if (element?.classList.contains('node') && svgId.includes(mapping.nodeName)) {
+        isMatch = true;
+      }
+      if (svgId.includes('flowchart') && svgId.includes(mapping.nodeName)) {
+        isMatch = true;
+      }
+    } else if (mapping.diagramType === 'sequenceDiagram') {
+      if ((element?.classList.contains('actor') || element?.classList.contains('participant')) && svgId.includes(mapping.nodeName)) {
+        isMatch = true;
+      }
+      if ((svgId.includes('actor') || svgId.includes('participant')) && svgId.includes(mapping.nodeName)) {
+        isMatch = true;
+      }
+    } else if (mapping.diagramType === 'classDiagram') {
+      if (element?.classList.contains('node') && element?.classList.contains(mapping.nodeName)) {
+        isMatch = true;
+      }
+      if (svgId.includes(mapping.nodeName)) {
+        isMatch = true;
+      }
+    } else if (mapping.diagramType === 'erDiagram') {
+      if (element?.classList.contains('entity') && element?.classList.contains(mapping.nodeName)) {
+        isMatch = true;
+      }
+      if (element?.classList.contains(mapping.nodeName)) {
+        isMatch = true;
+      }
+    } else {
+      if (svgId.includes(mapping.nodeName)) {
+        isMatch = true;
+      }
     }
-    if (mapping.svgSelector.includes('*="') && svgId.includes(mapping.nodeName)) {
-      return mapping;
+
+    if (isMatch && mapping.nodeName.length > longestMatchLength) {
+      bestMatch = mapping;
+      longestMatchLength = mapping.nodeName.length;
     }
   }
-  return null;
+
+  return bestMatch;
 }
