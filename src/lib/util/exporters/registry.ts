@@ -3,6 +3,8 @@ import type { Exporter, ExporterOptions, ProgressCallback, ExporterResult } from
 import { PNGExporter } from './exporters/png';
 import { PNGWatermarkExporter } from './exporters/png-watermark';
 import { PDFExporter } from './exporters/pdf';
+import { PPTXExporter } from './exporters/pptx';
+import { GIFExporter } from './exporters/gif';
 
 export class ExporterRegistry {
   private exporters = new Map<string, Exporter>();
@@ -46,5 +48,7 @@ export const defaultRegistry = new ExporterRegistry();
 defaultRegistry.register(new PNGExporter());
 defaultRegistry.register(new PNGWatermarkExporter());
 defaultRegistry.register(new PDFExporter());
+defaultRegistry.register(new PPTXExporter());
+defaultRegistry.register(new GIFExporter());
 
 export { defaultRegistry as registry };
