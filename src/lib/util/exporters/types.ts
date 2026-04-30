@@ -70,6 +70,25 @@ export interface PNGWatermarkExporterOptions extends PNGExporterOptions {
   imageScale?: number;
 }
 
+export interface PPTXExporterOptions extends ExporterOptions {
+  pageSize: 'a4' | 'a3' | 'letter' | 'legal' | 'tabloid';
+  orientation: 'portrait' | 'landscape';
+  scale: number;
+  includeTitle: boolean;
+  includeNotes: boolean;
+}
+
+export interface GIFExporterOptions extends ExporterOptions {
+  width?: number;
+  height?: number;
+  scale: number;
+  mode: 'auto' | 'width' | 'height';
+  frameDelay: number;
+  maxFrames: number;
+  loop: boolean;
+  quality: number;
+}
+
 export const PAGE_SIZES = {
   a3: { width: 297, height: 420 },
   a4: { width: 210, height: 297 },
