@@ -331,14 +331,14 @@
 <Dialog.Root bind:open={showOptionsDialog}>
   <Dialog.Portal>
     <Dialog.Overlay />
-    <Dialog.Content class="max-w-2xl">
-      <Dialog.Header>
+    <Dialog.Content class="flex max-h-[85vh] max-w-2xl flex-col">
+      <Dialog.Header class="shrink-0">
         <Dialog.Title>
           {selectedExporter?.name || 'Export'} Options
         </Dialog.Title>
       </Dialog.Header>
 
-      <div class="py-4">
+      <div class="min-h-0 flex-1 overflow-y-auto py-4">
         {#if selectedExporter?.getOptionsSchema}
           <JsonSchemaForm
             schema={selectedExporter.getOptionsSchema()}
@@ -352,7 +352,7 @@
         {/if}
       </div>
 
-      <Dialog.Footer class="gap-2">
+      <Dialog.Footer class="shrink-0 gap-2">
         <Dialog.Close asChild>
           <Button variant="outline" disabled={isExporting}>Cancel</Button>
         </Dialog.Close>

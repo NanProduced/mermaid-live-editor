@@ -12,7 +12,6 @@ import { waitForRender } from '$lib/util/autoSync';
 import { inputStateStore } from '$lib/util/state';
 import { get } from 'svelte/store';
 import { jsPDF } from 'jspdf';
-import { svg2pdf } from 'svg2pdf.js';
 import { getPageSizeInPixels } from '../types';
 
 export class PDFExporter implements Exporter<PDFExporterOptions> {
@@ -67,14 +66,6 @@ export class PDFExporter implements Exporter<PDFExporterOptions> {
       },
       required: ['pageSize', 'orientation', 'multiPage', 'scale']
     };
-  }
-
-  private createSVGElement(base64Svg: string): SVGSVGElement {
-    const svgData = atob(base64Svg);
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(svgData, 'image/svg+xml');
-    const svg = doc.documentElement as SVGSVGElement;
-    return svg;
   }
 
   private async renderSVGToCanvas(
@@ -151,32 +142,27 @@ export class PDFExporter implements Exporter<PDFExporterOptions> {
     const y = (pagePixels.height - renderHeight) / 2;
 
     const backgroundColor = window.getComputedStyle(document.body).getPropertyValue('--background');
-    const base64Svg = getBase64SVG(svg, {
+
+    const canvas = await this.renderSVGToCanvas(svg, svgWidth, svgHeight, {
+      scale: 2,
       backgroundColor
     });
 
-    try {
-      const svgElement = this.createSVGElement(base64Svg);
-      svgElement.setAttribute('width', `${renderWidth}pt`);
-      svgElement.setAttribute('height', `${renderHeight}pt`);
+    const imgData = canvas.toDataURL('image/png');
+    doc.addImage(imgData, 'PNG', x, y, renderWidth, renderHeight);
+  }
 
-      await svg2pdf(svgElement, doc, {
-        x,
-        y,
-        width: renderWidth,
-        height: renderHeight
-      });
-    } catch (error) {
-      console.warn('svg2pdf failed, using fallback method:', error);
+  private async renderStateToSVG(state: State): Promise<HTMLElement> {
+    inputStateStore.set(state);
+    await waitForRender();
+    await new Promise((resolve) => setTimeout(resolve, 100));
 
-      const canvas = await this.renderSVGToCanvas(svg, svgWidth, svgHeight, {
-        scale: 2,
-        backgroundColor
-      });
-
-      const imgData = canvas.toDataURL('image/png');
-      doc.addImage(imgData, 'PNG', x, y, renderWidth, renderHeight);
+    const svg = document.querySelector<HTMLElement>('#container svg');
+    if (!svg) {
+      throw new Error('SVG not found after rendering state');
     }
+
+    return svg.cloneNode(true) as HTMLElement;
   }
 
   async run(
@@ -190,6 +176,7 @@ export class PDFExporter implements Exporter<PDFExporterOptions> {
 
     const storeValue = get(inputStateStore);
     const originalPanZoom = storeValue.panZoom;
+    const originalState = { ...storeValue };
     inputStateStore.update((s) => ({ ...s, panZoom: false }));
 
     try {
@@ -208,28 +195,55 @@ export class PDFExporter implements Exporter<PDFExporterOptions> {
 
       const svgs: HTMLElement[] = [];
 
-      const currentSvg = document.querySelector<HTMLElement>('#container svg');
-      if (currentSvg) {
-        svgs.push(currentSvg);
-      }
-
-      if (opt.multiPage && svgs.length > 0) {
-        onProgress?.(0.4, 'Checking for additional diagrams...');
+      if (opt.multiPage) {
+        onProgress?.(0.4, 'Loading history entries...');
 
         try {
           const historyModule = await import('$lib/components/History/history');
           const historyEntries = get(historyModule.historyStore);
 
           if (historyEntries.length > 0) {
-            onProgress?.(0.5, `Found ${historyEntries.length} history entries`);
+            onProgress?.(0.5, `Rendering ${historyEntries.length} history diagrams...`);
+
+            for (let i = 0; i < historyEntries.length; i++) {
+              const entry = historyEntries[i];
+              const progress = 0.5 + (i / historyEntries.length) * 0.3;
+              onProgress?.(progress, `Rendering diagram ${i + 1} of ${historyEntries.length}...`);
+
+              try {
+                const svg = await this.renderStateToSVG(entry.state);
+                svgs.push(svg);
+              } catch (error) {
+                console.warn(`Failed to render history entry ${i}:`, error);
+              }
+            }
           }
         } catch (error) {
           console.warn('Could not access history:', error);
         }
+
+        if (svgs.length === 0) {
+          const currentSvg = document.querySelector<HTMLElement>('#container svg');
+          if (currentSvg) {
+            svgs.push(currentSvg.cloneNode(true) as HTMLElement);
+          }
+        }
+      } else {
+        const currentSvg = document.querySelector<HTMLElement>('#container svg');
+        if (currentSvg) {
+          svgs.push(currentSvg);
+        }
+      }
+
+      inputStateStore.set(originalState);
+      await waitForRender();
+
+      if (svgs.length === 0) {
+        throw new Error('No SVG found to export');
       }
 
       for (let i = 0; i < svgs.length; i++) {
-        const progress = 0.5 + (i / svgs.length) * 0.4;
+        const progress = 0.8 + (i / svgs.length) * 0.15;
         onProgress?.(progress, `Processing page ${i + 1} of ${svgs.length}...`);
 
         if (i > 0) {
