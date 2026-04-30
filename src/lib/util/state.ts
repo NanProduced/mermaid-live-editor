@@ -27,7 +27,8 @@ export const defaultState: State = {
   }),
   panZoom: true,
   rough: false,
-  updateDiagram: true
+  updateDiagram: true,
+  themeBackground: '#ffffff'
 };
 
 const urlParseFailedState = `flowchart TD

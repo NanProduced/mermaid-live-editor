@@ -13,6 +13,7 @@
   import Preset from '$/components/Preset.svelte';
   import Share from '$/components/Share.svelte';
   import SyncRoughToolbar from '$/components/SyncRoughToolbar.svelte';
+  import ThemePanel from '$/components/ThemePanel/ThemePanel.svelte';
   import { Button } from '$/components/ui/button';
   import * as Resizable from '$/components/ui/resizable';
   import { Switch } from '$/components/ui/switch';
@@ -25,6 +26,7 @@
   import { stateStore, updateCodeStore, urlsStore } from '$/util/state';
   import { logEvent, logMermaidChartClick } from '$/util/stats';
   import { initHandler } from '$/util/util';
+  import { initThemeBackground } from '$lib/util/themeStore';
   import { onMount } from 'svelte';
   import CodeIcon from '~icons/custom/code';
   import HistoryIcon from '~icons/material-symbols/history';
@@ -58,6 +60,7 @@
   onMount(async () => {
     showEditorChooser = shouldShowEditorChooser();
     await initHandler();
+    initThemeBackground();
     window.addEventListener('appinstalled', () => {
       logEvent('pwaInstalled', { isMobile });
     });
@@ -130,6 +133,7 @@
 
             <div class="group flex flex-wrap justify-between gap-4 sm:gap-6">
               <Preset />
+              <ThemePanel />
               <Actions />
             </div>
           </div>

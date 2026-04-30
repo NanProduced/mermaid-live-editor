@@ -35,6 +35,7 @@ export interface State {
   pan?: { x: number; y: number };
   zoom?: number;
   loader?: LoaderConfig;
+  themeBackground?: string;
 }
 
 export interface ValidatedState extends State {
@@ -104,4 +105,87 @@ export type InputType = Exclude<HTMLInputTypeAttribute, 'file'>;
 
 export interface EditorProps {
   onUpdate: (text: string) => void;
+}
+
+export type MermaidBuiltinTheme = 'default' | 'dark' | 'forest' | 'neutral' | 'base';
+
+export type ColorPresetId = 'default' | 'vibrant' | 'colorblind' | 'monochrome';
+
+export interface ThemeVariables {
+  darkMode?: boolean;
+  background?: string;
+  fontFamily?: string;
+  fontSize?: string;
+  primaryColor?: string;
+  primaryTextColor?: string;
+  primaryBorderColor?: string;
+  secondaryColor?: string;
+  secondaryTextColor?: string;
+  secondaryBorderColor?: string;
+  tertiaryColor?: string;
+  tertiaryTextColor?: string;
+  tertiaryBorderColor?: string;
+  nodeBorder?: string;
+  clusterBkg?: string;
+  clusterBorder?: string;
+  defaultLinkColor?: string;
+  titleColor?: string;
+  textColor?: string;
+  mainBkg?: string;
+  nodeBkg?: string;
+  lineColor?: string;
+  arrowMarkerColor?: string;
+  actorBkg?: string;
+  actorBorder?: string;
+  actorTextColor?: string;
+  signalColor?: string;
+  signalTextColor?: string;
+  noteBkgColor?: string;
+  noteTextColor?: string;
+  noteBorderColor?: string;
+  sectionBkgColor?: string;
+  sectionBkgColor2?: string;
+}
+
+export interface ColorPreset {
+  id: ColorPresetId;
+  name: string;
+  description: string;
+  themeVariables: ThemeVariables;
+  isDark?: boolean;
+}
+
+export interface SavedTheme {
+  id: string;
+  name: string;
+  mermaidTheme: MermaidBuiltinTheme;
+  themeVariables: ThemeVariables;
+  backgroundColor: string;
+  createdAt: number;
+  updatedAt: number;
+}
+
+export interface ThemeState {
+  activeMermaidTheme: MermaidBuiltinTheme;
+  activePreset: ColorPresetId | null;
+  themeVariables: ThemeVariables;
+  backgroundColor: string;
+  savedThemes: SavedTheme[];
+  activeSavedThemeId: string | null;
+}
+
+export interface ColorContrastInfo {
+  foreground: string;
+  background: string;
+  ratio: number;
+  level: 'AA' | 'AAA' | 'fail';
+  isAccessible: boolean;
+}
+
+export interface ThemeEditorColor {
+  key: keyof ThemeVariables;
+  label: string;
+  value: string;
+  contrastWith?: keyof ThemeVariables;
+  category: 'primary' | 'secondary' | 'tertiary' | 'text' | 'lines' | 'other';
 }
