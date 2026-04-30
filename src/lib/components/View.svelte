@@ -2,6 +2,8 @@
   import type { State, ValidatedState } from '$/types';
   import { recordRenderTime, shouldRefreshView } from '$/util/autoSync';
   import { render as renderDiagram } from '$/util/mermaid';
+  import { findNodeBySvgId, type NodeMapping } from '$lib/util/nodeSync';
+  import { setSelectedNode, nodeSyncStore } from '$lib/util/nodeSyncStore';
   import { PanZoomState } from '$/util/panZoom';
   import { inputStateStore, stateStore, updateCodeStore } from '$/util/state';
   import { saveStatistics } from '$/util/stats';
@@ -25,6 +27,58 @@
   let panZoom = true;
   let manualUpdate = true;
   let waitForFontAwesomeToLoad: FontAwesome['waitForFontAwesomeToLoad'] | undefined = $state();
+  let currentHoveredNode: NodeMapping | null = null;
+
+  const highlightNode = (node: NodeMapping | null) => {
+    if (!container) return;
+
+    // Remove previous highlights
+    const previouslyHighlighted = container.querySelectorAll('.node-highlighted');
+    previouslyHighlighted.forEach((el) => {
+      el.classList.remove('node-highlighted');
+      el.removeAttribute('style');
+    });
+
+    if (node) {
+      // Find and highlight the node
+      const elements = container.querySelectorAll(node.svgSelector);
+      elements.forEach((el) => {
+        el.classList.add('node-highlighted');
+        if (el instanceof SVGElement) {
+          el.style.stroke = '#ffd700';
+          el.style.strokeWidth = '3px';
+          el.style.filter = 'drop-shadow(0 0 4px #ffd700)';
+        }
+      });
+    }
+    currentHoveredNode = node;
+  };
+
+  const handleNodeClick = (event: MouseEvent) => {
+    const target = event.target as HTMLElement | SVGElement;
+    if (!target || !container) return;
+
+    // Traverse up to find the node element
+    let element: HTMLElement | SVGElement | null = target;
+    let nodeMapping: NodeMapping | null = null;
+
+    while (element && element !== container) {
+      const id = element.id;
+      if (id && $nodeSyncStore.parseResult?.mappings) {
+        nodeMapping = findNodeBySvgId($nodeSyncStore.parseResult.mappings, id);
+        if (nodeMapping) {
+          break;
+        }
+      }
+      element = element.parentElement;
+    }
+
+    if (nodeMapping) {
+      event.preventDefault();
+      event.stopPropagation();
+      setSelectedNode(nodeMapping);
+    }
+  };
 
   // Set up panZoom state observer to update the store when pan/zoom changes
   const setupPanZoomObserver = () => {
@@ -118,6 +172,9 @@
           if (state.panZoom) {
             handlePanZoom(state, graphDiv);
           }
+
+          // Add click event listener for node sync
+          container.addEventListener('click', handleNodeClick);
         }
         if (view?.parentElement && scroll) {
           view.parentElement.scrollTop = scroll;
@@ -139,12 +196,28 @@
 
   onMount(() => {
     setupPanZoomObserver();
+
+    // Subscribe to hovered node changes for highlighting
+    const unsubscribeNodeSync = nodeSyncStore.subscribe((state) => {
+      if (state.hoveredNode !== currentHoveredNode) {
+        highlightNode(state.hoveredNode);
+      }
+    });
+
     // Queue state changes to avoid race condition
     let pendingStateChange = Promise.resolve();
-    stateStore.subscribe((state) => {
+    const unsubscribeState = stateStore.subscribe((state) => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       pendingStateChange = pendingStateChange.then(() => handleStateChange(state).catch(() => {}));
     });
+
+    return () => {
+      unsubscribeNodeSync();
+      unsubscribeState();
+      if (container) {
+        container.removeEventListener('click', handleNodeClick);
+      }
+    };
   });
 </script>
 
