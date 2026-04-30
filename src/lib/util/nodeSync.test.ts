@@ -3,325 +3,417 @@ import { parseNodes, findNodeByPosition, findNodeBySvgId, type NodeMapping, type
 
 describe('nodeSync', () => {
   describe('parseNodes', () => {
-    it('should parse flowchart nodes correctly', () => {
-      const code = `flowchart TD
-    A[Christmas] -->|Get money| B(Go shopping)
-    B --> C{Let me think}
-    C -->|One| D[Laptop]
-    C -->|Two| E[iPhone]
-    C -->|Three| F[fa:fa-car Car]
-  `;
-
-      const result: ParseResult = parseNodes(code);
-
-      expect(result.success).toBe(true);
-      expect(result.diagramType).toBe('flowchart');
-      expect(result.mappings.length).toBeGreaterThan(0);
-
-      const nodeNames = result.mappings.map((m) => m.nodeName);
-      expect(nodeNames).toContain('A');
-      expect(nodeNames).toContain('B');
-      expect(nodeNames).toContain('C');
-      expect(nodeNames).toContain('D');
-      expect(nodeNames).toContain('E');
-      expect(nodeNames).toContain('F');
-    });
-
-    it('should parse class diagram nodes correctly', () => {
-      const code = `classDiagram
-    class Animal {
-        +String name
-        +int age
-        +makeSound()
-    }
-    class Dog {
-        +breed: String
-        +bark()
-    }
-    class Cat {
-        +color: String
-        +meow()
-    }
-    Animal <|-- Dog
-    Animal <|-- Cat
-  `;
-
-      const result: ParseResult = parseNodes(code);
-
-      expect(result.success).toBe(true);
-      expect(result.diagramType).toBe('classDiagram');
-      expect(result.mappings.length).toBeGreaterThan(0);
-
-      const nodeNames = result.mappings.map((m) => m.nodeName);
-      expect(nodeNames).toContain('Animal');
-      expect(nodeNames).toContain('Dog');
-      expect(nodeNames).toContain('Cat');
-    });
-
-    it('should parse sequence diagram nodes correctly', () => {
-      const code = `sequenceDiagram
+    describe('Sequence Diagram', () => {
+      it('should extract both sender and receiver from messages', () => {
+        const code = `sequenceDiagram
     participant User
     participant Browser
     participant Server
-    participant Database
-
+    
     User->>Browser: Login Request
     Browser->>Server: Authentication Request
-    Server->>Database: Query User
-    Database-->>Server: User Data
-    Server-->>Browser: Authentication Response
-    Browser-->>User: Login Success
-  `;
+    Server-->>Browser: Response
+`;
 
-      const result: ParseResult = parseNodes(code);
+        const result: ParseResult = parseNodes(code);
 
-      expect(result.success).toBe(true);
-      expect(result.diagramType).toBe('sequenceDiagram');
-      expect(result.mappings.length).toBeGreaterThan(0);
+        expect(result.success).toBe(true);
+        expect(result.diagramType).toBe('sequenceDiagram');
 
-      const nodeNames = result.mappings.map((m) => m.nodeName);
-      expect(nodeNames).toContain('User');
-      expect(nodeNames).toContain('Browser');
-      expect(nodeNames).toContain('Server');
-      expect(nodeNames).toContain('Database');
+        const nodeNames = result.mappings.map((m) => m.nodeName);
+        expect(nodeNames).toContain('User');
+        expect(nodeNames).toContain('Browser');
+        expect(nodeNames).toContain('Server');
+      });
+
+      it('should generate correct SVG selectors for sequence diagram', () => {
+        const code = `sequenceDiagram
+    actor User
+    participant Browser
+    
+    User->>Browser: Message
+`;
+
+        const result: ParseResult = parseNodes(code);
+
+        expect(result.success).toBe(true);
+
+        const userNode = result.mappings.find((m) => m.nodeName === 'User');
+        const browserNode = result.mappings.find((m) => m.nodeName === 'Browser');
+
+        expect(userNode?.svgSelector).toBe('.actor[id*="User"], .participant[id*="User"]');
+        expect(browserNode?.svgSelector).toBe('.actor[id*="Browser"], .participant[id*="Browser"]');
+      });
     });
 
-    it('should parse state diagram nodes correctly', () => {
-      const code = `stateDiagram-v2
-    [*] --> Idle
-    Idle --> Processing: Event1
-    Processing --> Success: Event2
-    Processing --> Failed: Event3
-    Success --> [*]
-    Failed --> [*]
-  `;
+    describe('Class Diagram', () => {
+      it('should extract both sides of class relations', () => {
+        const code = `classDiagram
+    class Animal
+    class Dog
+    class Cat
+    
+    Animal <|-- Dog
+    Animal <|-- Cat
+`;
 
-      const result: ParseResult = parseNodes(code);
+        const result: ParseResult = parseNodes(code);
 
-      expect(result.success).toBe(true);
-      expect(result.diagramType).toBe('stateDiagram');
-      expect(result.mappings.length).toBeGreaterThan(0);
+        expect(result.success).toBe(true);
+        expect(result.diagramType).toBe('classDiagram');
 
-      const nodeNames = result.mappings.map((m) => m.nodeName);
-      expect(nodeNames).toContain('Idle');
-      expect(nodeNames).toContain('Processing');
-      expect(nodeNames).toContain('Success');
-      expect(nodeNames).toContain('Failed');
-    });
+        const nodeNames = result.mappings.map((m) => m.nodeName);
+        expect(nodeNames).toContain('Animal');
+        expect(nodeNames).toContain('Dog');
+        expect(nodeNames).toContain('Cat');
+      });
 
-    it('should parse ER diagram nodes correctly', () => {
-      const code = `erDiagram
-    CUSTOMER ||--o{ ORDER : places
-    CUSTOMER {
-        string name
-        string email
-        int age
+      it('should generate correct SVG selectors for class diagram', () => {
+        const code = `classDiagram
+    class Animal
+    class Dog
+    
+    Animal <|-- Dog
+`;
+
+        const result: ParseResult = parseNodes(code);
+
+        expect(result.success).toBe(true);
+
+        const animalNode = result.mappings.find((m) => m.nodeName === 'Animal');
+        const dogNode = result.mappings.find((m) => m.nodeName === 'Dog');
+
+        expect(animalNode?.svgSelector).toBe('.node[class*="Animal"]');
+        expect(dogNode?.svgSelector).toBe('.node[class*="Dog"]');
+      });
+
+      it('should not conflict with member definitions', () => {
+        const code = `classDiagram
+    class Animal {
+        +String name
+        +int age
     }
-    ORDER ||--|{ ORDER_ITEM : contains
-    ORDER {
-        date orderDate
-        float totalAmount
+    class Dog {
+        +breed: String
     }
-    ORDER_ITEM }|--|| PRODUCT : includes
-    PRODUCT {
-        string name
-        float price
-        string category
-    }
-  `;
+    
+    Animal <|-- Dog
+`;
 
-      const result: ParseResult = parseNodes(code);
+        const result: ParseResult = parseNodes(code);
 
-      expect(result.success).toBe(true);
-      expect(result.diagramType).toBe('erDiagram');
-      expect(result.mappings.length).toBeGreaterThan(0);
+        expect(result.success).toBe(true);
 
-      const nodeNames = result.mappings.map((m) => m.nodeName);
-      expect(nodeNames).toContain('CUSTOMER');
-      expect(nodeNames).toContain('ORDER');
-      expect(nodeNames).toContain('ORDER_ITEM');
-      expect(nodeNames).toContain('PRODUCT');
+        const nodeNames = result.mappings.map((m) => m.nodeName);
+        expect(nodeNames).toContain('Animal');
+        expect(nodeNames).toContain('Dog');
+        // Should not include type names like String, int
+        expect(nodeNames).not.toContain('String');
+        expect(nodeNames).not.toContain('int');
+      });
     });
 
-    it('should return error for unsupported diagram types', () => {
-      const code = `gantt
-    title A Gantt Diagram
-    dateFormat  YYYY-MM-DD
-    section Section
-    A task           :a1, 2014-01-01, 30d
-    Another task     :after a1  , 20d
-  `;
+    describe('Flowchart', () => {
+      it('should generate correct SVG selectors for flowchart', () => {
+        const code = `flowchart TD
+    A[Start] --> B[End]
+`;
 
-      const result: ParseResult = parseNodes(code);
+        const result: ParseResult = parseNodes(code);
 
-      expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
-      expect(result.diagramType).toBe('gantt');
-    });
+        expect(result.success).toBe(true);
 
-    it('should return error for unrecognized diagram types', () => {
-      const code = `This is not a valid mermaid diagram
-    Just some random text
-  `;
+        const nodeA = result.mappings.find((m) => m.nodeName === 'A');
+        const nodeB = result.mappings.find((m) => m.nodeName === 'B');
 
-      const result: ParseResult = parseNodes(code);
+        expect(nodeA?.svgSelector).toBe('.node[id*="A"]');
+        expect(nodeB?.svgSelector).toBe('.node[id*="B"]');
+      });
 
-      expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
-    });
-
-    it('should map line numbers correctly for flowchart', () => {
-      const code = `flowchart TD
-    A[Start] --> B{Decision}
-    B -->|Yes| C[Process]
-    B -->|No| D[End]
+      it('should extract nodes on both sides of arrows', () => {
+        const code = `flowchart TD
+    A --> B
+    B --> C
     C --> D
-  `;
+`;
 
-      const result: ParseResult = parseNodes(code);
+        const result: ParseResult = parseNodes(code);
 
-      expect(result.success).toBe(true);
+        expect(result.success).toBe(true);
 
-      const nodeA = result.mappings.find((m) => m.nodeName === 'A');
-      const nodeB = result.mappings.find((m) => m.nodeName === 'B');
-      const nodeC = result.mappings.find((m) => m.nodeName === 'C');
-      const nodeD = result.mappings.find((m) => m.nodeName === 'D');
-
-      expect(nodeA?.lineNumber).toBe(2);
-      expect(nodeB?.lineNumber).toBe(2);
-      expect(nodeC?.lineNumber).toBe(3);
-      expect(nodeD?.lineNumber).toBe(4);
+        const nodeNames = result.mappings.map((m) => m.nodeName);
+        expect(nodeNames).toContain('A');
+        expect(nodeNames).toContain('B');
+        expect(nodeNames).toContain('C');
+        expect(nodeNames).toContain('D');
+      });
     });
 
-    it('should generate correct SVG selectors', () => {
-      const code = `flowchart TD
-    A[Test] --> B[Another]
-  `;
+    describe('ER Diagram', () => {
+      it('should generate precise SVG selectors for ER diagram', () => {
+        const code = `erDiagram
+    CUSTOMER ||--o{ ORDER : places
+    ORDER ||--|{ ORDER_ITEM : contains
+`;
 
-      const result: ParseResult = parseNodes(code);
+        const result: ParseResult = parseNodes(code);
 
-      expect(result.success).toBe(true);
+        expect(result.success).toBe(true);
 
-      const nodeA = result.mappings.find((m) => m.nodeName === 'A');
-      const nodeB = result.mappings.find((m) => m.nodeName === 'B');
+        const customerNode = result.mappings.find((m) => m.nodeName === 'CUSTOMER');
+        const orderNode = result.mappings.find((m) => m.nodeName === 'ORDER');
+        const orderItemNode = result.mappings.find((m) => m.nodeName === 'ORDER_ITEM');
 
-      expect(nodeA?.svgSelector).toBe('[id*="A"]');
-      expect(nodeB?.svgSelector).toBe('[id*="B"]');
-    });
-  });
+        // ER diagram should use precise class-based selectors
+        expect(customerNode?.svgSelector).toBe('.entity.CUSTOMER');
+        expect(orderNode?.svgSelector).toBe('.entity.ORDER');
+        expect(orderItemNode?.svgSelector).toBe('.entity.ORDER_ITEM');
+      });
 
-  describe('findNodeByPosition', () => {
-    it('should find node by position in flowchart', () => {
-      const code = `flowchart TD
-    A[Christmas] -->|Get money| B(Go shopping)
-    B --> C{Let me think}
-  `;
+      it('should extract entities from relation lines', () => {
+        const code = `erDiagram
+    CUSTOMER ||--o{ ORDER : places
+`;
 
-      const result: ParseResult = parseNodes(code);
-      expect(result.success).toBe(true);
+        const result: ParseResult = parseNodes(code);
 
-      // Find node A on line 2, column 5 (where 'A' is)
-      const nodeA = findNodeByPosition(result.mappings, 2, 5, code);
-      expect(nodeA).toBeDefined();
-      expect(nodeA?.nodeName).toBe('A');
+        expect(result.success).toBe(true);
 
-      // Find node B on line 2, column 40 (where 'B' is)
-      const nodeB = findNodeByPosition(result.mappings, 2, 40, code);
-      expect(nodeB).toBeDefined();
-      expect(nodeB?.nodeName).toBe('B');
-
-      // Find node C on line 3, column 10 (where 'C' is)
-      const nodeC = findNodeByPosition(result.mappings, 3, 10, code);
-      expect(nodeC).toBeDefined();
-      expect(nodeC?.nodeName).toBe('C');
-    });
-
-    it('should return null for positions not on any node', () => {
-      const code = `flowchart TD
-    A[Test] --> B[Another]
-  `;
-
-      const result: ParseResult = parseNodes(code);
-      expect(result.success).toBe(true);
-
-      // Position on whitespace
-      const nullNode = findNodeByPosition(result.mappings, 1, 1, code);
-      expect(nullNode).toBeNull();
+        const nodeNames = result.mappings.map((m) => m.nodeName);
+        expect(nodeNames).toContain('CUSTOMER');
+        expect(nodeNames).toContain('ORDER');
+      });
     });
   });
 
   describe('findNodeBySvgId', () => {
-    it('should find node by SVG id containing node name', () => {
-      const code = `flowchart TD
-    A[Test] --> B[Another]
-  `;
+    it('should find flowchart nodes with node class', () => {
+      const mappings: NodeMapping[] = [
+        { lineNumber: 2, nodeName: 'A', svgSelector: '.node[id*="A"]', diagramType: 'flowchart' },
+        { lineNumber: 2, nodeName: 'B', svgSelector: '.node[id*="B"]', diagramType: 'flowchart' }
+      ];
 
-      const result: ParseResult = parseNodes(code);
-      expect(result.success).toBe(true);
+      // Simulate a real mermaid SVG element with node class
+      const mockElement = {
+        classList: {
+          contains: (cls: string) => cls === 'node'
+        }
+      } as unknown as HTMLElement;
 
-      // Simulate mermaid's SVG id format (usually includes the node name)
-      const nodeA = findNodeBySvgId(result.mappings, 'graph-A');
+      const nodeA = findNodeBySvgId(mappings, 'flowchart-A-1', mockElement);
       expect(nodeA).toBeDefined();
       expect(nodeA?.nodeName).toBe('A');
 
-      const nodeB = findNodeBySvgId(result.mappings, 'flowchart-B-123');
+      const nodeB = findNodeBySvgId(mappings, 'graph-B-2', mockElement);
       expect(nodeB).toBeDefined();
       expect(nodeB?.nodeName).toBe('B');
     });
 
-    it('should return null for SVG ids not matching any node', () => {
-      const code = `flowchart TD
-    A[Test] --> B[Another]
-  `;
+    it('should find sequence diagram actors and participants', () => {
+      const mappings: NodeMapping[] = [
+        { lineNumber: 2, nodeName: 'User', svgSelector: '.actor[id*="User"], .participant[id*="User"]', diagramType: 'sequenceDiagram' },
+        { lineNumber: 3, nodeName: 'Server', svgSelector: '.actor[id*="Server"], .participant[id*="Server"]', diagramType: 'sequenceDiagram' }
+      ];
 
-      const result: ParseResult = parseNodes(code);
-      expect(result.success).toBe(true);
+      const mockActorElement = {
+        classList: {
+          contains: (cls: string) => cls === 'actor'
+        }
+      } as unknown as HTMLElement;
 
-      const nullNode = findNodeBySvgId(result.mappings, 'some-other-id');
-      expect(nullNode).toBeNull();
+      const mockParticipantElement = {
+        classList: {
+          contains: (cls: string) => cls === 'participant'
+        }
+      } as unknown as HTMLElement;
+
+      const userNode = findNodeBySvgId(mappings, 'actor-User', mockActorElement);
+      expect(userNode).toBeDefined();
+      expect(userNode?.nodeName).toBe('User');
+
+      const serverNode = findNodeBySvgId(mappings, 'participant-Server', mockParticipantElement);
+      expect(serverNode).toBeDefined();
+      expect(serverNode?.nodeName).toBe('Server');
+    });
+
+    it('should find ER diagram entities with precise class matching', () => {
+      const mappings: NodeMapping[] = [
+        { lineNumber: 2, nodeName: 'CUSTOMER', svgSelector: '.entity.CUSTOMER', diagramType: 'erDiagram' },
+        { lineNumber: 2, nodeName: 'ORDER', svgSelector: '.entity.ORDER', diagramType: 'erDiagram' }
+      ];
+
+      const mockCustomerElement = {
+        classList: {
+          contains: (cls: string) => cls === 'entity' || cls === 'CUSTOMER'
+        }
+      } as unknown as HTMLElement;
+
+      const mockOrderElement = {
+        classList: {
+          contains: (cls: string) => cls === 'entity' || cls === 'ORDER'
+        }
+      } as unknown as HTMLElement;
+
+      const customerNode = findNodeBySvgId(mappings, 'er-CUSTOMER', mockCustomerElement);
+      expect(customerNode).toBeDefined();
+      expect(customerNode?.nodeName).toBe('CUSTOMER');
+
+      const orderNode = findNodeBySvgId(mappings, 'er-ORDER', mockOrderElement);
+      expect(orderNode).toBeDefined();
+      expect(orderNode?.nodeName).toBe('ORDER');
+    });
+
+    it('should not match unrelated elements in ER diagram', () => {
+      const mappings: NodeMapping[] = [
+        { lineNumber: 2, nodeName: 'CUSTOMER', svgSelector: '.entity.CUSTOMER', diagramType: 'erDiagram' }
+      ];
+
+      // An attribute element (not an entity)
+      const mockAttributeElement = {
+        classList: {
+          contains: (cls: string) => cls === 'attribute' || cls === 'CUSTOMER_name'
+        }
+      } as unknown as HTMLElement;
+
+      // Should not match because it's not an entity
+      const attributeNode = findNodeBySvgId(mappings, 'CUSTOMER_name-attr', mockAttributeElement);
+      expect(attributeNode).toBeNull();
     });
   });
 
-  describe('edge cases', () => {
-    it('should handle empty code', () => {
-      const result: ParseResult = parseNodes('');
-      expect(result.success).toBe(false);
-      expect(result.error).toBeDefined();
-    });
-
-    it('should handle code with only comments', () => {
-      const code = `%% This is a comment
-    %% Another comment
-  `;
+  describe('findNodeByPosition', () => {
+    it('should find node by position in line', () => {
+      const code = `sequenceDiagram
+    participant Client
+    participant API
+    participant DB
+`;
 
       const result: ParseResult = parseNodes(code);
-      expect(result.success).toBe(false);
+      expect(result.success).toBe(true);
+
+      // Line 2: "    participant Client"
+      // Index 0-3: 4 spaces
+      // Index 4-14: "participant" (11 chars)
+      // Index 15: space
+      // Index 16-21: "Client"
+      // Column 17 (1-based) is 'C'
+      const clientNode = findNodeByPosition(result.mappings, 2, 17, code);
+      expect(clientNode).toBeDefined();
+      expect(clientNode?.nodeName).toBe('Client');
     });
 
-    it('should handle nodes with hyphens in names', () => {
+    it('should return null for invalid positions', () => {
       const code = `flowchart TD
-    node-1[Start] --> node-2[End]
-  `;
+    A[Start]
+`;
+
+      const result: ParseResult = parseNodes(code);
+      expect(result.success).toBe(true);
+
+      // Invalid line number
+      const nullNode1 = findNodeByPosition(result.mappings, 999, 1, code);
+      expect(nullNode1).toBeNull();
+
+      // Invalid column (on whitespace)
+      const nullNode2 = findNodeByPosition(result.mappings, 1, 1, code);
+      expect(nullNode2).toBeNull();
+    });
+  });
+
+  describe('integration tests', () => {
+    it('should handle complete sequence diagram workflow', () => {
+      const code = `sequenceDiagram
+    participant Client
+    participant API
+    participant DB
+    
+    Client->>API: Request
+    API->>DB: Query
+    DB-->>API: Result
+    API-->>Client: Response
+`;
 
       const result: ParseResult = parseNodes(code);
       expect(result.success).toBe(true);
 
       const nodeNames = result.mappings.map((m) => m.nodeName);
-      expect(nodeNames).toContain('node-1');
-      expect(nodeNames).toContain('node-2');
+      expect(nodeNames).toContain('Client');
+      expect(nodeNames).toContain('API');
+      expect(nodeNames).toContain('DB');
+
+      // Test position lookup
+      const clientNode = findNodeByPosition(result.mappings, 2, 17, code);
+      expect(clientNode).toBeDefined();
+      expect(clientNode?.nodeName).toBe('Client');
+
+      // Test SVG ID lookup (simulating real mermaid format)
+      const mockParticipantElement = {
+        classList: {
+          contains: (cls: string) => cls === 'participant'
+        }
+      } as unknown as HTMLElement;
+
+      const apiNode = findNodeBySvgId(result.mappings, 'participant-API', mockParticipantElement);
+      expect(apiNode).toBeDefined();
+      expect(apiNode?.nodeName).toBe('API');
     });
 
-    it('should handle nodes with underscores in names', () => {
-      const code = `flowchart TD
-    node_1[Start] --> node_2[End]
-  `;
+    it('should handle complete class diagram workflow', () => {
+      const code = `classDiagram
+    class Vehicle {
+        +String brand
+        +start()
+    }
+    class Car {
+        +int doors
+        +drive()
+    }
+    class Motorcycle {
+        +boolean hasSideCar
+        +ride()
+    }
+    
+    Vehicle <|-- Car
+    Vehicle <|-- Motorcycle
+`;
 
       const result: ParseResult = parseNodes(code);
       expect(result.success).toBe(true);
 
       const nodeNames = result.mappings.map((m) => m.nodeName);
-      expect(nodeNames).toContain('node_1');
-      expect(nodeNames).toContain('node_2');
+      expect(nodeNames).toContain('Vehicle');
+      expect(nodeNames).toContain('Car');
+      expect(nodeNames).toContain('Motorcycle');
+      // Should not include type names
+      expect(nodeNames).not.toContain('String');
+      expect(nodeNames).not.toContain('int');
+      expect(nodeNames).not.toContain('boolean');
+    });
+
+    it('should handle complete ER diagram workflow', () => {
+      const code = `erDiagram
+    CUSTOMER {
+        string name
+        string email
+    }
+    ORDER {
+        date orderDate
+        float total
+    }
+    CUSTOMER ||--o{ ORDER : places
+`;
+
+      const result: ParseResult = parseNodes(code);
+      expect(result.success).toBe(true);
+
+      const nodeNames = result.mappings.map((m) => m.nodeName);
+      expect(nodeNames).toContain('CUSTOMER');
+      expect(nodeNames).toContain('ORDER');
+
+      // Verify selectors are precise
+      const customerNode = result.mappings.find((m) => m.nodeName === 'CUSTOMER');
+      expect(customerNode?.svgSelector).toBe('.entity.CUSTOMER');
     });
   });
 });

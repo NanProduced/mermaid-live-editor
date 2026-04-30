@@ -65,7 +65,7 @@
     while (element && element !== container) {
       const id = element.id;
       if (id && $nodeSyncStore.parseResult?.mappings) {
-        nodeMapping = findNodeBySvgId($nodeSyncStore.parseResult.mappings, id);
+        nodeMapping = findNodeBySvgId($nodeSyncStore.parseResult.mappings, id, element);
         if (nodeMapping) {
           break;
         }
