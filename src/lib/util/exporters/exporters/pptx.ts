@@ -116,19 +116,6 @@ export class PPTXExporter implements Exporter<PPTXExporterOptions> {
     });
   }
 
-  private async renderStateToSVG(state: State): Promise<HTMLElement> {
-    inputStateStore.set(state);
-    await waitForRender();
-    await new Promise((resolve) => setTimeout(resolve, 100));
-
-    const svg = document.querySelector<HTMLElement>('#container svg');
-    if (!svg) {
-      throw new Error('SVG not found after rendering state');
-    }
-
-    return svg.cloneNode(true) as HTMLElement;
-  }
-
   private getPageSizeInInches(
     size: PageSize,
     orientation: 'portrait' | 'landscape'
@@ -155,23 +142,47 @@ export class PPTXExporter implements Exporter<PPTXExporterOptions> {
     };
   }
 
+  private getSvgDimensions(svg: HTMLElement): { width: number; height: number } {
+    const svgEl = svg as unknown as SVGSVGElement;
+    const viewBox = svgEl.viewBox?.baseVal;
+
+    if (viewBox && viewBox.width > 0 && viewBox.height > 0) {
+      return { width: viewBox.width, height: viewBox.height };
+    }
+
+    const widthAttr = svg.getAttribute('width');
+    const heightAttr = svg.getAttribute('height');
+
+    if (widthAttr && heightAttr) {
+      const width = parseFloat(widthAttr.replace('px', ''));
+      const height = parseFloat(heightAttr.replace('px', ''));
+      if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+        return { width, height };
+      }
+    }
+
+    const box = svg.getBoundingClientRect();
+    if (box.width > 0 && box.height > 0) {
+      return { width: box.width, height: box.height };
+    }
+
+    return { width: 800, height: 600 };
+  }
+
   private async addSlideWithDiagram(
     pres: PptxGenJS,
     svg: HTMLElement,
     options: PPTXExporterOptions,
+    pageInInches: { width: number; height: number },
     title?: string,
     notes?: string
   ): Promise<void> {
-    const { pageSize, orientation, scale, includeTitle, includeNotes } = options;
+    const { scale, includeTitle, includeNotes } = options;
 
-    const pageInInches = this.getPageSizeInInches(pageSize as PageSize, orientation);
-    const pagePixels = getPageSizeInPixels(pageSize as PageSize, orientation, 72);
-
-    const svgBox = svg.getBoundingClientRect();
-    const svgEl = svg as unknown as SVGSVGElement;
-    const viewBox = svgEl.viewBox?.baseVal;
-    const svgWidth = viewBox && viewBox.width > 0 ? viewBox.width : svgBox.width;
-    const svgHeight = viewBox && viewBox.height > 0 ? viewBox.height : svgBox.height;
+    const pagePixels = getPageSizeInPixels(options.pageSize as PageSize, options.orientation, 72);
+    const svgDimensions = this.getSvgDimensions(svg);
+    const svgWidth = svgDimensions.width;
+    const svgHeight = svgDimensions.height;
 
     const svgAspectRatio = svgWidth / svgHeight;
     const pageAspectRatio = pagePixels.width / pagePixels.height;
@@ -254,13 +265,12 @@ export class PPTXExporter implements Exporter<PPTXExporterOptions> {
       const pageInInches = this.getPageSizeInInches(opt.pageSize as PageSize, opt.orientation);
 
       onProgress?.(0.3, 'Creating PowerPoint presentation...');
-      const pres = new PptxGenJS();
-      pres.layout = {
+      const pres = new PptxGenJS({
         width: pageInInches.width,
         height: pageInInches.height
-      };
+      });
 
-      const entries: Array<{ svg: HTMLElement; title?: string; notes?: string }> = [];
+      const entries: Array<{ state: State; title?: string; notes?: string }> = [];
 
       onProgress?.(0.4, 'Loading history entries...');
 
@@ -273,19 +283,11 @@ export class PPTXExporter implements Exporter<PPTXExporterOptions> {
 
           for (let i = 0; i < historyEntries.length; i++) {
             const entry = historyEntries[i];
-            const progress = 0.5 + (i / historyEntries.length) * 0.3;
-            onProgress?.(progress, `Rendering diagram ${i + 1} of ${historyEntries.length}...`);
-
-            try {
-              const svg = await this.renderStateToSVG(entry.state);
-              entries.push({
-                svg,
-                title: entry.name || `Diagram ${i + 1}`,
-                notes: entry.state.code
-              });
-            } catch (error) {
-              console.warn(`Failed to render history entry ${i}:`, error);
-            }
+            entries.push({
+              state: entry.state,
+              title: entry.name || `Diagram ${i + 1}`,
+              notes: entry.state.code
+            });
           }
         }
       } catch (error) {
@@ -293,36 +295,44 @@ export class PPTXExporter implements Exporter<PPTXExporterOptions> {
       }
 
       if (entries.length === 0) {
-        const currentSvg = document.querySelector<HTMLElement>('#container svg');
-        if (currentSvg) {
-          entries.push({
-            svg: currentSvg.cloneNode(true) as HTMLElement,
-            title: 'Current Diagram',
-            notes: state.code
-          });
+        entries.push({
+          state: state,
+          title: 'Current Diagram',
+          notes: state.code
+        });
+      }
+
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const progress = 0.5 + (i / entries.length) * 0.4;
+        onProgress?.(progress, `Processing slide ${i + 1} of ${entries.length}...`);
+
+        try {
+          inputStateStore.set(entry.state);
+          await waitForRender();
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          const svg = document.querySelector<HTMLElement>('#container svg');
+          if (!svg) {
+            console.warn(`SVG not found for entry ${i}`);
+            continue;
+          }
+
+          await this.addSlideWithDiagram(
+            pres,
+            svg,
+            opt,
+            pageInInches,
+            entry.title,
+            entry.notes
+          );
+        } catch (error) {
+          console.warn(`Failed to process entry ${i}:`, error);
         }
       }
 
       inputStateStore.set(originalState);
       await waitForRender();
-
-      if (entries.length === 0) {
-        throw new Error('No SVG found to export');
-      }
-
-      for (let i = 0; i < entries.length; i++) {
-        const progress = 0.8 + (i / entries.length) * 0.15;
-        onProgress?.(progress, `Processing slide ${i + 1} of ${entries.length}...`);
-
-        const entry = entries[i];
-        await this.addSlideWithDiagram(
-          pres,
-          entry.svg,
-          opt,
-          entry.title,
-          entry.notes
-        );
-      }
 
       onProgress?.(0.95, 'Finalizing PowerPoint...');
 

@@ -102,17 +102,57 @@ export class GIFExporter implements Exporter<GIFExporterOptions> {
     };
   }
 
-  private async renderStateToSVG(state: State): Promise<HTMLElement> {
-    inputStateStore.set(state);
-    await waitForRender();
-    await new Promise((resolve) => setTimeout(resolve, 100));
+  private getSvgDimensions(svg: HTMLElement): { width: number; height: number } {
+    const svgEl = svg as unknown as SVGSVGElement;
+    const viewBox = svgEl.viewBox?.baseVal;
 
-    const svg = document.querySelector<HTMLElement>('#container svg');
-    if (!svg) {
-      throw new Error('SVG not found after rendering state');
+    if (viewBox && viewBox.width > 0 && viewBox.height > 0) {
+      return { width: viewBox.width, height: viewBox.height };
     }
 
-    return svg.cloneNode(true) as HTMLElement;
+    const widthAttr = svg.getAttribute('width');
+    const heightAttr = svg.getAttribute('height');
+
+    if (widthAttr && heightAttr) {
+      const width = parseFloat(widthAttr.replace('px', ''));
+      const height = parseFloat(heightAttr.replace('px', ''));
+      if (!isNaN(width) && !isNaN(height) && width > 0 && height > 0) {
+        return { width, height };
+      }
+    }
+
+    const box = svg.getBoundingClientRect();
+    if (box.width > 0 && box.height > 0) {
+      return { width: box.width, height: box.height };
+    }
+
+    return { width: 800, height: 600 };
+  }
+
+  private calculateCanvasDimensions(
+    svgDimensions: { width: number; height: number },
+    options: GIFExporterOptions
+  ): { width: number; height: number } {
+    const opt = options;
+    const { width: contentWidth, height: contentHeight } = svgDimensions;
+
+    let canvasWidth: number;
+    let canvasHeight: number;
+
+    if (opt.mode === 'width' && opt.width) {
+      const ratio = contentHeight / contentWidth;
+      canvasWidth = opt.width;
+      canvasHeight = opt.width * ratio;
+    } else if (opt.mode === 'height' && opt.height) {
+      const ratio = contentWidth / contentHeight;
+      canvasWidth = opt.height * ratio;
+      canvasHeight = opt.height;
+    } else {
+      canvasWidth = contentWidth * opt.scale;
+      canvasHeight = contentHeight * opt.scale;
+    }
+
+    return { width: Math.floor(Math.max(1, canvasWidth)), height: Math.floor(Math.max(1, canvasHeight)) };
   }
 
   private async renderSVGToCanvas(
@@ -122,6 +162,10 @@ export class GIFExporter implements Exporter<GIFExporterOptions> {
     backgroundColor: string,
     rough: boolean
   ): Promise<HTMLCanvasElement> {
+    if (canvasWidth <= 0 || canvasHeight <= 0) {
+      throw new Error(`Invalid canvas dimensions: ${canvasWidth}x${canvasHeight}`);
+    }
+
     const canvas = document.createElement('canvas');
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
@@ -154,37 +198,6 @@ export class GIFExporter implements Exporter<GIFExporterOptions> {
     });
   }
 
-  private calculateCanvasDimensions(
-    svg: HTMLElement,
-    options: GIFExporterOptions
-  ): { width: number; height: number } {
-    const opt = options;
-
-    const box = svg.getBoundingClientRect();
-    const svgEl = svg as unknown as SVGSVGElement;
-    const viewBox = svgEl.viewBox?.baseVal;
-    const contentWidth = viewBox && viewBox.width > 0 ? viewBox.width : box.width;
-    const contentHeight = viewBox && viewBox.height > 0 ? viewBox.height : box.height;
-
-    let canvasWidth: number;
-    let canvasHeight: number;
-
-    if (opt.mode === 'width' && opt.width) {
-      const ratio = contentHeight / contentWidth;
-      canvasWidth = opt.width;
-      canvasHeight = opt.width * ratio;
-    } else if (opt.mode === 'height' && opt.height) {
-      const ratio = contentWidth / contentHeight;
-      canvasWidth = opt.height * ratio;
-      canvasHeight = opt.height;
-    } else {
-      canvasWidth = contentWidth * opt.scale;
-      canvasHeight = contentHeight * opt.scale;
-    }
-
-    return { width: Math.floor(canvasWidth), height: Math.floor(canvasHeight) };
-  }
-
   async run(
     state: State,
     options?: GIFExporterOptions,
@@ -207,11 +220,13 @@ export class GIFExporter implements Exporter<GIFExporterOptions> {
       const canvases: HTMLCanvasElement[] = [];
       let canvasDimensions: { width: number; height: number } | undefined;
 
-      onProgress?.(0.3, 'Loading history entries...');
-
       const backgroundColor = window
         .getComputedStyle(document.body)
         .getPropertyValue('--background');
+
+      const entries: Array<{ state: State; rough: boolean }> = [];
+
+      onProgress?.(0.3, 'Loading history entries...');
 
       try {
         const historyModule = await import('$lib/components/History/history');
@@ -219,49 +234,60 @@ export class GIFExporter implements Exporter<GIFExporterOptions> {
 
         if (historyEntries.length > 0) {
           const entriesToProcess = historyEntries.slice(0, opt.maxFrames);
-          onProgress?.(0.4, `Rendering ${entriesToProcess.length} frames...`);
 
           for (let i = 0; i < entriesToProcess.length; i++) {
             const entry = entriesToProcess[i];
-            const progress = 0.4 + (i / entriesToProcess.length) * 0.4;
-            onProgress?.(progress, `Rendering frame ${i + 1} of ${entriesToProcess.length}...`);
-
-            try {
-              const svg = await this.renderStateToSVG(entry.state);
-
-              if (!canvasDimensions) {
-                canvasDimensions = this.calculateCanvasDimensions(svg, opt);
-              }
-
-              const canvas = await this.renderSVGToCanvas(
-                svg,
-                canvasDimensions.width,
-                canvasDimensions.height,
-                backgroundColor,
-                entry.state.rough
-              );
-              canvases.push(canvas);
-            } catch (error) {
-              console.warn(`Failed to render history entry ${i}:`, error);
-            }
+            entries.push({
+              state: entry.state,
+              rough: entry.state.rough
+            });
           }
         }
       } catch (error) {
         console.warn('Could not access history:', error);
       }
 
-      if (canvases.length === 0) {
-        const currentSvg = document.querySelector<HTMLElement>('#container svg');
-        if (currentSvg) {
-          canvasDimensions = this.calculateCanvasDimensions(currentSvg, opt);
+      if (entries.length === 0) {
+        entries.push({
+          state: state,
+          rough: state.rough
+        });
+      }
+
+      onProgress?.(0.4, `Rendering ${entries.length} frames...`);
+
+      for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const progress = 0.4 + (i / entries.length) * 0.4;
+        onProgress?.(progress, `Rendering frame ${i + 1} of ${entries.length}...`);
+
+        try {
+          inputStateStore.set(entry.state);
+          await waitForRender();
+          await new Promise((resolve) => setTimeout(resolve, 100));
+
+          const svg = document.querySelector<HTMLElement>('#container svg');
+          if (!svg) {
+            console.warn(`SVG not found for frame ${i}`);
+            continue;
+          }
+
+          const svgDimensions = this.getSvgDimensions(svg);
+
+          if (!canvasDimensions) {
+            canvasDimensions = this.calculateCanvasDimensions(svgDimensions, opt);
+          }
+
           const canvas = await this.renderSVGToCanvas(
-            currentSvg,
+            svg,
             canvasDimensions.width,
             canvasDimensions.height,
             backgroundColor,
-            state.rough
+            entry.rough
           );
           canvases.push(canvas);
+        } catch (error) {
+          console.warn(`Failed to render frame ${i}:`, error);
         }
       }
 
