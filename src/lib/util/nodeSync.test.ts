@@ -41,8 +41,8 @@ describe('nodeSync', () => {
         const userNode = result.mappings.find((m) => m.nodeName === 'User');
         const browserNode = result.mappings.find((m) => m.nodeName === 'Browser');
 
-        expect(userNode?.svgSelector).toBe('.actor[id*="User"], .participant[id*="User"]');
-        expect(browserNode?.svgSelector).toBe('.actor[id*="Browser"], .participant[id*="Browser"]');
+        expect(userNode?.svgSelector).toBe('g.actor.User, g.participant.User');
+        expect(browserNode?.svgSelector).toBe('g.actor.Browser, g.participant.Browser');
       });
     });
 
@@ -83,8 +83,8 @@ describe('nodeSync', () => {
         const animalNode = result.mappings.find((m) => m.nodeName === 'Animal');
         const dogNode = result.mappings.find((m) => m.nodeName === 'Dog');
 
-        expect(animalNode?.svgSelector).toBe('.node[class*="Animal"]');
-        expect(dogNode?.svgSelector).toBe('.node[class*="Dog"]');
+        expect(animalNode?.svgSelector).toBe('g.node.Animal');
+        expect(dogNode?.svgSelector).toBe('g.node.Dog');
       });
 
       it('should not conflict with member definitions', () => {
@@ -107,9 +107,11 @@ describe('nodeSync', () => {
         const nodeNames = result.mappings.map((m) => m.nodeName);
         expect(nodeNames).toContain('Animal');
         expect(nodeNames).toContain('Dog');
-        // Should not include type names like String, int
         expect(nodeNames).not.toContain('String');
         expect(nodeNames).not.toContain('int');
+        expect(nodeNames).not.toContain('string');
+        expect(nodeNames).not.toContain('float');
+        expect(nodeNames).not.toContain('boolean');
       });
     });
 
@@ -126,8 +128,8 @@ describe('nodeSync', () => {
         const nodeA = result.mappings.find((m) => m.nodeName === 'A');
         const nodeB = result.mappings.find((m) => m.nodeName === 'B');
 
-        expect(nodeA?.svgSelector).toBe('.node[id*="A"]');
-        expect(nodeB?.svgSelector).toBe('.node[id*="B"]');
+        expect(nodeA?.svgSelector).toBe('g.node.A');
+        expect(nodeB?.svgSelector).toBe('g.node.B');
       });
 
       it('should extract nodes on both sides of arrows', () => {
@@ -164,10 +166,9 @@ describe('nodeSync', () => {
         const orderNode = result.mappings.find((m) => m.nodeName === 'ORDER');
         const orderItemNode = result.mappings.find((m) => m.nodeName === 'ORDER_ITEM');
 
-        // ER diagram should use precise class-based selectors
-        expect(customerNode?.svgSelector).toBe('.entity.CUSTOMER');
-        expect(orderNode?.svgSelector).toBe('.entity.ORDER');
-        expect(orderItemNode?.svgSelector).toBe('.entity.ORDER_ITEM');
+        expect(customerNode?.svgSelector).toBe('g.entity.CUSTOMER');
+        expect(orderNode?.svgSelector).toBe('g.entity.ORDER');
+        expect(orderItemNode?.svgSelector).toBe('g.entity.ORDER_ITEM');
       });
 
       it('should extract entities from relation lines', () => {
@@ -187,59 +188,91 @@ describe('nodeSync', () => {
   });
 
   describe('findNodeBySvgId', () => {
-    it('should find flowchart nodes with node class', () => {
+    it('should find flowchart nodes with node class and nodeName class', () => {
       const mappings: NodeMapping[] = [
-        { lineNumber: 2, nodeName: 'A', svgSelector: '.node[id*="A"]', diagramType: 'flowchart' },
-        { lineNumber: 2, nodeName: 'B', svgSelector: '.node[id*="B"]', diagramType: 'flowchart' }
+        { lineNumber: 2, nodeName: 'A', svgSelector: 'g.node.A', diagramType: 'flowchart' },
+        { lineNumber: 2, nodeName: 'B', svgSelector: 'g.node.B', diagramType: 'flowchart' }
       ];
 
-      // Simulate a real mermaid SVG element with node class
-      const mockElement = {
+      const mockElementA = {
         classList: {
-          contains: (cls: string) => cls === 'node'
+          contains: (cls: string) => cls === 'node' || cls === 'A'
         }
       } as unknown as HTMLElement;
 
-      const nodeA = findNodeBySvgId(mappings, 'flowchart-A-1', mockElement);
+      const mockElementB = {
+        classList: {
+          contains: (cls: string) => cls === 'node' || cls === 'B'
+        }
+      } as unknown as HTMLElement;
+
+      const nodeA = findNodeBySvgId(mappings, 'any-id', mockElementA);
       expect(nodeA).toBeDefined();
       expect(nodeA?.nodeName).toBe('A');
 
-      const nodeB = findNodeBySvgId(mappings, 'graph-B-2', mockElement);
+      const nodeB = findNodeBySvgId(mappings, 'any-id', mockElementB);
       expect(nodeB).toBeDefined();
       expect(nodeB?.nodeName).toBe('B');
     });
 
-    it('should find sequence diagram actors and participants', () => {
+    it('should find sequence diagram actors and participants by class', () => {
       const mappings: NodeMapping[] = [
-        { lineNumber: 2, nodeName: 'User', svgSelector: '.actor[id*="User"], .participant[id*="User"]', diagramType: 'sequenceDiagram' },
-        { lineNumber: 3, nodeName: 'Server', svgSelector: '.actor[id*="Server"], .participant[id*="Server"]', diagramType: 'sequenceDiagram' }
+        { lineNumber: 2, nodeName: 'User', svgSelector: 'g.actor.User, g.participant.User', diagramType: 'sequenceDiagram' },
+        { lineNumber: 3, nodeName: 'Server', svgSelector: 'g.actor.Server, g.participant.Server', diagramType: 'sequenceDiagram' }
       ];
 
       const mockActorElement = {
         classList: {
-          contains: (cls: string) => cls === 'actor'
+          contains: (cls: string) => cls === 'actor' || cls === 'User'
         }
       } as unknown as HTMLElement;
 
       const mockParticipantElement = {
         classList: {
-          contains: (cls: string) => cls === 'participant'
+          contains: (cls: string) => cls === 'participant' || cls === 'Server'
         }
       } as unknown as HTMLElement;
 
-      const userNode = findNodeBySvgId(mappings, 'actor-User', mockActorElement);
+      const userNode = findNodeBySvgId(mappings, 'any-id', mockActorElement);
       expect(userNode).toBeDefined();
       expect(userNode?.nodeName).toBe('User');
 
-      const serverNode = findNodeBySvgId(mappings, 'participant-Server', mockParticipantElement);
+      const serverNode = findNodeBySvgId(mappings, 'any-id', mockParticipantElement);
       expect(serverNode).toBeDefined();
       expect(serverNode?.nodeName).toBe('Server');
     });
 
+    it('should find class diagram nodes by node class and nodeName class', () => {
+      const mappings: NodeMapping[] = [
+        { lineNumber: 2, nodeName: 'Animal', svgSelector: 'g.node.Animal', diagramType: 'classDiagram' },
+        { lineNumber: 3, nodeName: 'Dog', svgSelector: 'g.node.Dog', diagramType: 'classDiagram' }
+      ];
+
+      const mockAnimalElement = {
+        classList: {
+          contains: (cls: string) => cls === 'node' || cls === 'Animal'
+        }
+      } as unknown as HTMLElement;
+
+      const mockDogElement = {
+        classList: {
+          contains: (cls: string) => cls === 'node' || cls === 'Dog'
+        }
+      } as unknown as HTMLElement;
+
+      const animalNode = findNodeBySvgId(mappings, 'any-id', mockAnimalElement);
+      expect(animalNode).toBeDefined();
+      expect(animalNode?.nodeName).toBe('Animal');
+
+      const dogNode = findNodeBySvgId(mappings, 'any-id', mockDogElement);
+      expect(dogNode).toBeDefined();
+      expect(dogNode?.nodeName).toBe('Dog');
+    });
+
     it('should find ER diagram entities with precise class matching', () => {
       const mappings: NodeMapping[] = [
-        { lineNumber: 2, nodeName: 'CUSTOMER', svgSelector: '.entity.CUSTOMER', diagramType: 'erDiagram' },
-        { lineNumber: 2, nodeName: 'ORDER', svgSelector: '.entity.ORDER', diagramType: 'erDiagram' }
+        { lineNumber: 2, nodeName: 'CUSTOMER', svgSelector: 'g.entity.CUSTOMER', diagramType: 'erDiagram' },
+        { lineNumber: 2, nodeName: 'ORDER', svgSelector: 'g.entity.ORDER', diagramType: 'erDiagram' }
       ];
 
       const mockCustomerElement = {
@@ -254,30 +287,81 @@ describe('nodeSync', () => {
         }
       } as unknown as HTMLElement;
 
-      const customerNode = findNodeBySvgId(mappings, 'er-CUSTOMER', mockCustomerElement);
+      const customerNode = findNodeBySvgId(mappings, 'any-id', mockCustomerElement);
       expect(customerNode).toBeDefined();
       expect(customerNode?.nodeName).toBe('CUSTOMER');
 
-      const orderNode = findNodeBySvgId(mappings, 'er-ORDER', mockOrderElement);
+      const orderNode = findNodeBySvgId(mappings, 'any-id', mockOrderElement);
       expect(orderNode).toBeDefined();
       expect(orderNode?.nodeName).toBe('ORDER');
     });
 
     it('should not match unrelated elements in ER diagram', () => {
       const mappings: NodeMapping[] = [
-        { lineNumber: 2, nodeName: 'CUSTOMER', svgSelector: '.entity.CUSTOMER', diagramType: 'erDiagram' }
+        { lineNumber: 2, nodeName: 'CUSTOMER', svgSelector: 'g.entity.CUSTOMER', diagramType: 'erDiagram' }
       ];
 
-      // An attribute element (not an entity)
       const mockAttributeElement = {
         classList: {
-          contains: (cls: string) => cls === 'attribute' || cls === 'CUSTOMER_name'
+          contains: (cls: string) => cls === 'attribute' || cls === 'CUSTOMER'
         }
       } as unknown as HTMLElement;
 
-      // Should not match because it's not an entity
-      const attributeNode = findNodeBySvgId(mappings, 'CUSTOMER_name-attr', mockAttributeElement);
+      const attributeNode = findNodeBySvgId(mappings, 'any-id', mockAttributeElement);
       expect(attributeNode).toBeNull();
+    });
+
+    it('should find state diagram nodes by state class and nodeName class', () => {
+      const mappings: NodeMapping[] = [
+        { lineNumber: 2, nodeName: 'Idle', svgSelector: 'g.state.Idle', diagramType: 'stateDiagram' },
+        { lineNumber: 3, nodeName: 'Running', svgSelector: 'g.state.Running', diagramType: 'stateDiagram' }
+      ];
+
+      const mockIdleElement = {
+        classList: {
+          contains: (cls: string) => cls === 'state' || cls === 'Idle'
+        }
+      } as unknown as HTMLElement;
+
+      const mockRunningElement = {
+        classList: {
+          contains: (cls: string) => cls === 'state' || cls === 'Running'
+        }
+      } as unknown as HTMLElement;
+
+      const idleNode = findNodeBySvgId(mappings, 'any-id', mockIdleElement);
+      expect(idleNode).toBeDefined();
+      expect(idleNode?.nodeName).toBe('Idle');
+
+      const runningNode = findNodeBySvgId(mappings, 'any-id', mockRunningElement);
+      expect(runningNode).toBeDefined();
+      expect(runningNode?.nodeName).toBe('Running');
+    });
+
+    it('should use longest matching nodeName when multiple classes match', () => {
+      const mappings: NodeMapping[] = [
+        { lineNumber: 2, nodeName: 'API', svgSelector: 'g.node.API', diagramType: 'flowchart' },
+        { lineNumber: 2, nodeName: 'API_Gateway', svgSelector: 'g.node.API_Gateway', diagramType: 'flowchart' }
+      ];
+
+      const mockGatewayElement = {
+        classList: {
+          contains: (cls: string) => cls === 'node' || cls === 'API_Gateway' || cls === 'API'
+        }
+      } as unknown as HTMLElement;
+
+      const gatewayNode = findNodeBySvgId(mappings, 'any-id', mockGatewayElement);
+      expect(gatewayNode).toBeDefined();
+      expect(gatewayNode?.nodeName).toBe('API_Gateway');
+    });
+
+    it('should return null when element is null', () => {
+      const mappings: NodeMapping[] = [
+        { lineNumber: 2, nodeName: 'A', svgSelector: 'g.node.A', diagramType: 'flowchart' }
+      ];
+
+      const result = findNodeBySvgId(mappings, 'any-id', null);
+      expect(result).toBeNull();
     });
   });
 
@@ -292,12 +376,6 @@ describe('nodeSync', () => {
       const result: ParseResult = parseNodes(code);
       expect(result.success).toBe(true);
 
-      // Line 2: "    participant Client"
-      // Index 0-3: 4 spaces
-      // Index 4-14: "participant" (11 chars)
-      // Index 15: space
-      // Index 16-21: "Client"
-      // Column 17 (1-based) is 'C'
       const clientNode = findNodeByPosition(result.mappings, 2, 17, code);
       expect(clientNode).toBeDefined();
       expect(clientNode?.nodeName).toBe('Client');
@@ -311,11 +389,9 @@ describe('nodeSync', () => {
       const result: ParseResult = parseNodes(code);
       expect(result.success).toBe(true);
 
-      // Invalid line number
       const nullNode1 = findNodeByPosition(result.mappings, 999, 1, code);
       expect(nullNode1).toBeNull();
 
-      // Invalid column (on whitespace)
       const nullNode2 = findNodeByPosition(result.mappings, 1, 1, code);
       expect(nullNode2).toBeNull();
     });
@@ -342,19 +418,17 @@ describe('nodeSync', () => {
       expect(nodeNames).toContain('API');
       expect(nodeNames).toContain('DB');
 
-      // Test position lookup
       const clientNode = findNodeByPosition(result.mappings, 2, 17, code);
       expect(clientNode).toBeDefined();
       expect(clientNode?.nodeName).toBe('Client');
 
-      // Test SVG ID lookup (simulating real mermaid format)
       const mockParticipantElement = {
         classList: {
-          contains: (cls: string) => cls === 'participant'
+          contains: (cls: string) => cls === 'participant' || cls === 'API'
         }
       } as unknown as HTMLElement;
 
-      const apiNode = findNodeBySvgId(result.mappings, 'participant-API', mockParticipantElement);
+      const apiNode = findNodeBySvgId(result.mappings, 'any-id', mockParticipantElement);
       expect(apiNode).toBeDefined();
       expect(apiNode?.nodeName).toBe('API');
     });
@@ -385,7 +459,6 @@ describe('nodeSync', () => {
       expect(nodeNames).toContain('Vehicle');
       expect(nodeNames).toContain('Car');
       expect(nodeNames).toContain('Motorcycle');
-      // Should not include type names
       expect(nodeNames).not.toContain('String');
       expect(nodeNames).not.toContain('int');
       expect(nodeNames).not.toContain('boolean');
@@ -411,9 +484,8 @@ describe('nodeSync', () => {
       expect(nodeNames).toContain('CUSTOMER');
       expect(nodeNames).toContain('ORDER');
 
-      // Verify selectors are precise
       const customerNode = result.mappings.find((m) => m.nodeName === 'CUSTOMER');
-      expect(customerNode?.svgSelector).toBe('.entity.CUSTOMER');
+      expect(customerNode?.svgSelector).toBe('g.entity.CUSTOMER');
     });
   });
 });

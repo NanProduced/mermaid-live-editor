@@ -22,18 +22,18 @@ function getSvgSelector(nodeName: string, diagramType: string): string {
   const escapedName = escapeRegExp(nodeName);
   switch (diagramType) {
     case 'flowchart':
-      return `.node[id*="${escapedName}"]`;
+      return `g.node.${escapedName}`;
     case 'classDiagram':
-      return `.node[class*="${escapedName}"]`;
+      return `g.node.${escapedName}`;
     case 'sequenceDiagram':
-      return `.actor[id*="${escapedName}"], .participant[id*="${escapedName}"]`;
+      return `g.actor.${escapedName}, g.participant.${escapedName}`;
     case 'stateDiagram':
     case 'stateDiagram-v2':
-      return `.state[id*="${escapedName}"]`;
+      return `g.state.${escapedName}`;
     case 'erDiagram':
-      return `.entity.${escapedName}`;
+      return `g.entity.${escapedName}`;
     default:
-      return `[id*="${escapedName}"]`;
+      return `[class*="${escapedName}"]`;
   }
 }
 
@@ -46,7 +46,9 @@ const reservedKeywords = new Set([
   'stateDiagram', 'stateDiagram-v2', 'erDiagram',
   'TD', 'LR', 'TB', 'BT', 'RL',
   'participant', 'actor', 'class', 'state',
-  'title', 'direction'
+  'title', 'direction',
+  'String', 'int', 'float', 'boolean', 'void', 'double', 'long', 'short', 'char', 'byte',
+  'string', 'date', 'datetime', 'time', 'timestamp', 'number', 'bool'
 ]);
 
 function isReservedKeyword(word: string): boolean {
@@ -118,7 +120,7 @@ function extractClassDiagramNodes(line: string, lineNumber: number, mappings: No
   }
 
   match = classMemberStartPattern.exec(line);
-  if (match && !existingNames.has(match[2])) {
+  if (match && !existingNames.has(match[2]) && !isReservedKeyword(match[2])) {
     mappings.push({
       lineNumber,
       nodeName: match[2],
@@ -463,6 +465,16 @@ export function findNodeByPosition(
   return null;
 }
 
+function elementHasClass(element: HTMLElement | SVGElement | null, className: string): boolean {
+  if (!element) return false;
+  return element.classList.contains(className);
+}
+
+function elementHasNodeNameClass(element: HTMLElement | SVGElement | null, nodeName: string): boolean {
+  if (!element) return false;
+  return element.classList.contains(nodeName);
+}
+
 export function findNodeBySvgId(mappings: NodeMapping[], svgId: string, element: HTMLElement | SVGElement | null = null): NodeMapping | null {
   let bestMatch: NodeMapping | null = null;
   let longestMatchLength = 0;
@@ -471,35 +483,28 @@ export function findNodeBySvgId(mappings: NodeMapping[], svgId: string, element:
     let isMatch = false;
 
     if (mapping.diagramType === 'flowchart') {
-      if (element?.classList.contains('node') && svgId.includes(mapping.nodeName)) {
-        isMatch = true;
-      }
-      if (svgId.includes('flowchart') && svgId.includes(mapping.nodeName)) {
+      if (elementHasClass(element, 'node') && elementHasNodeNameClass(element, mapping.nodeName)) {
         isMatch = true;
       }
     } else if (mapping.diagramType === 'sequenceDiagram') {
-      if ((element?.classList.contains('actor') || element?.classList.contains('participant')) && svgId.includes(mapping.nodeName)) {
-        isMatch = true;
-      }
-      if ((svgId.includes('actor') || svgId.includes('participant')) && svgId.includes(mapping.nodeName)) {
+      if ((elementHasClass(element, 'actor') || elementHasClass(element, 'participant')) && 
+          elementHasNodeNameClass(element, mapping.nodeName)) {
         isMatch = true;
       }
     } else if (mapping.diagramType === 'classDiagram') {
-      if (element?.classList.contains('node') && element?.classList.contains(mapping.nodeName)) {
-        isMatch = true;
-      }
-      if (svgId.includes(mapping.nodeName)) {
+      if (elementHasClass(element, 'node') && elementHasNodeNameClass(element, mapping.nodeName)) {
         isMatch = true;
       }
     } else if (mapping.diagramType === 'erDiagram') {
-      if (element?.classList.contains('entity') && element?.classList.contains(mapping.nodeName)) {
+      if (elementHasClass(element, 'entity') && elementHasNodeNameClass(element, mapping.nodeName)) {
         isMatch = true;
       }
-      if (element?.classList.contains(mapping.nodeName)) {
+    } else if (mapping.diagramType === 'stateDiagram' || mapping.diagramType === 'stateDiagram-v2') {
+      if (elementHasClass(element, 'state') && elementHasNodeNameClass(element, mapping.nodeName)) {
         isMatch = true;
       }
     } else {
-      if (svgId.includes(mapping.nodeName)) {
+      if (elementHasNodeNameClass(element, mapping.nodeName)) {
         isMatch = true;
       }
     }
