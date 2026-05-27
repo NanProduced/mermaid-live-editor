@@ -53,6 +53,7 @@
 
   // ─── Node Linker: bidirectional preview ↔ editor linking ───
 
+  let viewID = '';
   let currentlyHighlightedElement: SVGElement | null = null;
 
   /**
@@ -104,20 +105,30 @@
 
   /**
    * Extract the user-defined node ID from an SVG element's generated ID.
-   * Mermaid v11 patterns: `flowchart-{nodeId}-${index}`, `D-{nodeId}-${index}`, or plain `{nodeId}`.
+   * Mermaid v11 prefixes IDs with the viewID (e.g. `graph-1-flowchart-A-0`).
+   * Falls back to patterns without prefix for robustness.
    */
   const extractNodeIdFromSvgId = (svgId: string): string | null => {
-    // Pattern: flowchart-{nodeId}-{number}
-    let match = /^flowchart-(.+)-\d+$/.exec(svgId);
-    if (match) return match[1];
+    // Strip the current viewID prefix if present (Mermaid v11: `{viewID}-flowchart-{nodeId}-{n}`)
+    const effectiveId = svgId.startsWith(viewID + '-')
+      ? svgId.slice(viewID.length + 1)
+      : svgId;
+    // Also try generic prefix stripping (e.g. `graph-1-flowchart-A-0` → `flowchart-A-0`)
+    const generic = effectiveId.replace(/^[^-]+-\d+-/, '');
 
-    // Pattern: D-{nodeId}-{number}
-    match = /^D-(.+)-\d+$/.exec(svgId);
-    if (match) return match[1];
+    for (const id of [effectiveId, generic]) {
+      // Pattern: flowchart-{nodeId}-{number}
+      let match = /^flowchart-(.+)-\d+$/.exec(id);
+      if (match) return match[1];
 
-    // Pattern: plain nodeId (no prefix)
-    match = /^[A-Za-z_][\w-]*$/.exec(svgId);
-    if (match) return match[0];
+      // Pattern: D-{nodeId}-{number}
+      match = /^D-(.+)-\d+$/.exec(id);
+      if (match) return match[1];
+    }
+
+    // Pattern: plain nodeId (no prefix, no suffix)
+    const plainMatch = /^[A-Za-z_][\w-]*$/.exec(svgId);
+    if (plainMatch) return plainMatch[0];
 
     return null;
   };
@@ -180,7 +191,7 @@
 
         const scroll = view?.parentElement?.scrollTop;
         delete container.dataset.processed;
-        const viewID = uniqueID('graph-');
+        viewID = uniqueID('graph-');
         const {
           svg,
           bindFunctions,

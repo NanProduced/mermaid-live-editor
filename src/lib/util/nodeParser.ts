@@ -494,42 +494,43 @@ function extractSurvivingNodeDefinitions(
 }
 
 /**
+ * Checks if an SVG element ID matches a node ID, accounting for Mermaid v11's
+ * viewID prefix pattern: `{viewID}-flowchart-{nodeId}-{n}`.
+ */
+function svgIdMatchesNode(elId: string, nodeId: string): boolean {
+  const escaped = escapeRegex(nodeId);
+  // Suffix patterns (after optional viewID prefix like `graph-1-`)
+  const suffixes = [
+    new RegExp(`flowchart-${escaped}-\\d+$`),
+    new RegExp(`D-${escaped}-\\d+$`),
+    new RegExp(`^${escaped}-\\d+$`),
+    new RegExp(`^${escaped}$`)
+  ];
+  return suffixes.some((re) => re.test(elId));
+}
+
+/**
  * Finds the SVG element corresponding to a node ID in the rendered Mermaid diagram.
- * Mermaid v11 uses IDs like `flowchart-{nodeId}-{index}` on `<g>` elements.
+ * Mermaid v11 prefixes IDs with the viewID: `{viewID}-flowchart-{nodeId}-{index}`.
  */
 export function findSvgNodeElement(container: HTMLElement, nodeId: string): SVGElement | null {
-  // Strategy 1: Match by SVG element ID pattern (Mermaid v11: `flowchart-{id}-{n}`)
+  // Strategy 1: Match by SVG element ID pattern (handles prefixed IDs)
   const allGroups = container.querySelectorAll<SVGGElement>('g[id]');
   for (const g of allGroups) {
-    const elId = g.id;
-    // Check for common Mermaid patterns
-    if (
-      elId === nodeId ||
-      elId === `flowchart-${nodeId}` ||
-      new RegExp(`^flowchart-${escapeRegex(nodeId)}-\\d+$`).test(elId) ||
-      new RegExp(`^D-${escapeRegex(nodeId)}-\\d+$`).test(elId) ||
-      new RegExp(`^${escapeRegex(nodeId)}-\\d+$`).test(elId)
-    ) {
-      // Verify this is a node group (contains a rect/path/foreignObject, not just an edge)
-      if (isNodeGroup(g)) {
-        return g;
-      }
+    if (isNodeGroup(g) && svgIdMatchesNode(g.id, nodeId)) {
+      return g;
     }
   }
 
   // Strategy 2: Find by text content matching the node label
-  const nodes = parseNodes(container.closest('[data-code]')?.getAttribute('data-code') ?? '');
-  const nodeInfo = nodes.get(nodeId);
-  if (nodeInfo) {
-    const textElements = container.querySelectorAll('foreignObject span, text, tspan');
-    for (const textEl of textElements) {
-      const text = textEl.textContent?.trim();
-      if (text && text === nodeInfo.label) {
-        // Walk up to find the parent node group
-        const parentGroup = textEl.closest('g[id]');
-        if (parentGroup && isNodeGroup(parentGroup)) {
-          return parentGroup as SVGGElement;
-        }
+  const textElements = container.querySelectorAll('foreignObject span, text, tspan');
+  for (const textEl of textElements) {
+    const text = textEl.textContent?.trim();
+    if (text && text === nodeId) {
+      // Walk up to find the parent node group
+      const parentGroup = textEl.closest('g[id]');
+      if (parentGroup && isNodeGroup(parentGroup)) {
+        return parentGroup as SVGGElement;
       }
     }
   }
@@ -539,15 +540,10 @@ export function findSvgNodeElement(container: HTMLElement, nodeId: string): SVGE
 
 /**
  * Determines if an SVG `<g>` element is a node group (not an edge).
+ * In Mermaid v11, edge groups are anonymous (no id) and contain only `<path>` elements.
  */
 function isNodeGroup(g: Element): boolean {
-  // Node groups typically contain rect, circle, polygon, or foreignObject
-  const hasShape = g.querySelector('rect, circle, polygon, ellipse, foreignObject') !== null;
-  const id = g.id || '';
-  // Edge groups typically have IDs like `L-A-B-0` or contain `edge` in class
-  const isEdge =
-    /^L-/.test(id) || g.classList.contains('edgePath') || g.classList.contains('edge-pattern');
-  return hasShape && !isEdge;
+  return g.querySelector('rect, circle, polygon, ellipse, foreignObject') !== null;
 }
 
 function escapeRegex(str: string): string {
