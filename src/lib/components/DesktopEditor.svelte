@@ -191,6 +191,26 @@
       editor.setPosition({ lineNumber: req.line, column: col });
       editor.revealLineInCenter(req.line);
       editor.focus();
+
+      // Add line decoration to highlight the navigated node
+      nodeLinkDecorations?.set([
+        {
+          range: new monaco.Range(req.line, 1, req.line, 1),
+          options: {
+            isWholeLine: true,
+            className: 'node-linked-line',
+            glyphMarginClassName: 'node-linked-glyph',
+            overviewRuler: {
+              color: '#e8347a',
+              position: monaco.editor.OverviewRulerLane.Left
+            }
+          }
+        }
+      ]);
+
+      // Also update cursorNodeId so the preview highlights the node
+      cursorNodeId.set(req.nodeId ?? null);
+
       // Clear the request after handling
       navigationRequest.set(null);
     });

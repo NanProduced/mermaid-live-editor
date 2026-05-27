@@ -39,57 +39,86 @@
   let knownNodeIds: string[] = [];
   let highlightedSvgNodeId: string | null = null;
 
-  /** After rendering, walk SVG to find node elements and attach event handlers */
+  /**
+   * Walk the rendered SVG to build the nodeId → SVG element map.
+   * Event handlers are attached to the container (event delegation) rather
+   * than individual elements, making them robust against Mermaid DOM changes.
+   */
   const setupNodeInteractions = () => {
     if (!container) return;
 
-    // Parse the code to get known node IDs
     const nodes = parseNodes(code);
     knownNodeIds = nodes.map((n) => n.id);
-
-    // Clear old map
     svgNodeMap.clear();
 
-    // Find all node groups in the rendered SVG
     const nodeElements = container.querySelectorAll<SVGGElement>('g.node');
     for (const el of nodeElements) {
       const svgId = el.id;
       const nodeId = matchSvgToNodeId(svgId, knownNodeIds);
       if (nodeId) {
         svgNodeMap.set(nodeId, el as unknown as SVGElement);
-        attachNodeHandlers(el as unknown as SVGElement, nodeId);
+        (el as unknown as SVGElement).style.cursor = 'pointer';
       }
     }
   };
 
-  const attachNodeHandlers = (el: SVGElement, nodeId: string) => {
-    el.style.cursor = 'pointer';
+  /**
+   * Walk up from an event target to find the enclosing g.node, then resolve
+   * its SVG element ID to a source-code node ID.
+   */
+  const getNodeIdFromElement = (target: EventTarget | null): string | null => {
+    if (!target || !(target instanceof Element)) return null;
+    const nodeGroup = target.closest('g.node');
+    if (!nodeGroup?.id) return null;
+    return matchSvgToNodeId(nodeGroup.id, knownNodeIds);
+  };
 
-    el.addEventListener('mouseenter', () => {
-      hoveredNodeId.set(nodeId);
-    });
+  /** Event-delegation handler for mouseover/mouseout on the container */
+  const handleContainerHover = (e: MouseEvent) => {
+    if (!container) return;
+    const nodeId = getNodeIdFromElement(e.target);
 
-    el.addEventListener('mouseleave', () => {
-      hoveredNodeId.set(null);
-    });
-
-    el.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const nodes = parseNodes(code);
-      const node = nodes.find((n) => n.id === nodeId);
-      if (node) {
-        navigationRequest.set({ line: node.line, column: node.column, nodeId });
+    if (e.type === 'mouseover') {
+      if (nodeId) hoveredNodeId.set(nodeId);
+    } else {
+      // mouseout: only clear if the new target is outside the current node group
+      const relatedTarget = e.relatedTarget as Element | null;
+      const currentNodeGroup = relatedTarget?.closest('g.node');
+      const currentNodeId = currentNodeGroup?.id
+        ? matchSvgToNodeId(currentNodeGroup.id, knownNodeIds)
+        : null;
+      if (currentNodeId !== nodeId) {
+        hoveredNodeId.set(null);
       }
-    });
+    }
+  };
 
-    el.addEventListener('contextmenu', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      contextMenuRequest.set({
-        nodeId,
-        x: e.clientX,
-        y: e.clientY
-      });
+  /** Event-delegation handler for click on the container */
+  const handleContainerClick = (e: MouseEvent) => {
+    const nodeId = getNodeIdFromElement(e.target);
+    if (!nodeId) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const nodes = parseNodes(code);
+    const node = nodes.find((n) => n.id === nodeId);
+    if (node) {
+      navigationRequest.set({ line: node.line, column: node.column, nodeId });
+    }
+  };
+
+  /** Event-delegation handler for contextmenu on the container */
+  const handleContainerContextMenu = (e: MouseEvent) => {
+    const nodeId = getNodeIdFromElement(e.target);
+    if (!nodeId) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    contextMenuRequest.set({
+      nodeId,
+      x: e.clientX,
+      y: e.clientY
     });
   };
 
@@ -253,7 +282,20 @@
   id="view"
   bind:this={view}
   class={['h-full w-full', shouldShowGrid && `grid-bg-${$mode}`, error && 'opacity-50']}>
-  <div id="container" bind:this={container} class="h-full overflow-auto"></div>
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+  <div
+    id="container"
+    bind:this={container}
+    class="h-full overflow-auto"
+    role="application"
+    aria-label="Mermaid diagram preview"
+    onmouseovercapture={handleContainerHover}
+    onmouseoutcapture={handleContainerHover}
+    onclickcapture={handleContainerClick}
+    oncontextmenucapture={handleContainerContextMenu}></div>
 </div>
 
 <style>

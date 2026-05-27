@@ -207,6 +207,81 @@ describe('deleteNode', () => {
     expect(result).toContain('C{Let me think}');
     expect(result).toContain('E[iPhone]');
   });
+
+  it('should not break sibling node label when two nodes are on the same line', () => {
+    const code = `flowchart TD
+    A[Alpha] --> AB[beta]`;
+    const result = deleteNode(code, 'A');
+    // AB[beta] should remain intact
+    expect(result).toContain('AB[beta]');
+    // A's label should be stripped, but the line should remain (edge still exists)
+    expect(result).not.toContain('A[Alpha]');
+  });
+
+  it('should strip target label without removing the line', () => {
+    const code = `flowchart TD
+    C -->|One| D[Laptop]`;
+    const result = deleteNode(code, 'D');
+    // The line should not contain D[Laptop] anymore
+    expect(result).not.toContain('D[Laptop]');
+  });
+
+  it('should handle bare source node removal', () => {
+    const code = `flowchart TD
+    A[Start] --> B[Middle]
+    B --> C[End]`;
+    const result = deleteNode(code, 'B');
+    // Both lines involving B should be gone
+    expect(result).not.toContain('B[Middle]');
+    expect(result).not.toContain('B --> C[End]');
+  });
+  it('should not corrupt sibling labels when node ID is a substring of another', () => {
+    const code = `flowchart TD
+    AB[Alpha] --> C[Gamma]`;
+    const result = deleteNode(code, 'A');
+    // AB[Alpha] must be completely untouched since we're deleting A, not AB
+    expect(result).toContain('AB[Alpha]');
+    expect(result).toContain('C[Gamma]');
+  });
+
+  it('should handle chain pattern without consuming sibling nodes', () => {
+    const code = `flowchart TD
+    Start --> A[Alpha] --> AB[beta] --> End`;
+    const result = deleteNode(code, 'A');
+    // AB[beta] and End must be preserved
+    expect(result).toContain('AB[beta]');
+    expect(result).toContain('End');
+    expect(result).not.toContain('A[Alpha]');
+  });
+
+  it('should reconnect chain when deleting middle bare node', () => {
+    const code = `flowchart TD
+    A --> B --> C`;
+    const result = deleteNode(code, 'B');
+    // Chain should reconnect: A --> C
+    expect(result).toContain('A');
+    expect(result).toContain('C');
+    // B should be gone
+    expect(result).not.toContain('B -->');
+    expect(result).not.toContain('--> B');
+  });
+
+  it('should preserve all other node labels in complex graph', () => {
+    const code = `flowchart TD
+    A[Alpha] --> B[Beta]
+    A --> C[Gamma]
+    B --> D[Delta]
+    C --> D`;
+    const result = deleteNode(code, 'B');
+    // A[Alpha] and C[Gamma] must be preserved (defined on lines not removed)
+    expect(result).toContain('A[Alpha]');
+    expect(result).toContain('C[Gamma]');
+    // B's label should be stripped from the first line
+    expect(result).not.toContain('B[Beta]');
+    // Line "B --> D[Delta]" is removed entirely (bare source B),
+    // so D[Delta] is lost (its only definition was on that line)
+    expect(result).not.toContain('B -->');
+  });
 });
 
 describe('matchSvgToNodeId', () => {

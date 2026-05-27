@@ -202,51 +202,119 @@ export function changeNodeColor(
 }
 
 /**
+ * Check if a node ID appears with a delimiter+label on a given line.
+ * Uses word-boundary check to avoid matching substrings (e.g. `A` inside `AB`).
+ */
+function nodeHasLabelOnLine(line: string, nodeId: string): boolean {
+  const esc = escapeRegex(nodeId);
+  for (const delim of DELIMITERS) {
+    const pattern = new RegExp(
+      `(^|[^A-Za-z0-9_])${esc}\\s*${escapeRegex(delim.open)}`
+    );
+    if (pattern.test(line)) return true;
+  }
+  return false;
+}
+
+/**
+ * Surgically strip all label definitions for a node ID on a single line.
+ * Uses the DELIMITERS table (longest-first) to find exact label boundaries,
+ * then removes only the delimiter+label text, preserving everything else.
+ *
+ * Example: stripNodeLabelsOnLine("A[Alpha] --> AB[beta]", "A")
+ *   → "A --> AB[beta]"   (AB[beta] is preserved intact)
+ */
+function stripNodeLabelsOnLine(line: string, nodeId: string): string {
+  let result = line;
+  let found = true;
+
+  while (found) {
+    found = false;
+    for (const delim of DELIMITERS) {
+      // Match nodeId with word-boundary before and delimiter open after
+      const pattern = new RegExp(
+        `(^|[^A-Za-z0-9_])${escapeRegex(nodeId)}(\\s*)${escapeRegex(delim.open)}`
+      );
+      const match = pattern.exec(result);
+      if (!match) continue;
+
+      const prefix = match[1];
+      const nodeIdStart = match.index + prefix.length;
+      const openStart = nodeIdStart + nodeId.length + match[2].length;
+      const closeIdx = result.indexOf(delim.close, openStart + delim.open.length);
+      if (closeIdx === -1) continue;
+
+      // Keep everything before the delimiter and after the close delimiter
+      const before = result.slice(0, nodeIdStart + nodeId.length);
+      const after = result.slice(closeIdx + delim.close.length);
+      result = before + after;
+      found = true;
+      break; // restart since string changed
+    }
+  }
+
+  return result;
+}
+
+/**
  * Delete a node from the code: removes its definition line and any edges
  * that reference it. Also removes associated style lines.
+ * Uses surgical label stripping to avoid corrupting sibling nodes on the same line.
  */
 export function deleteNode(code: string, nodeId: string): string {
   const lines = code.split('\n');
   const result: string[] = [];
   const esc = escapeRegex(nodeId);
-  // Node ID possibly followed by a shape delimiter+label, e.g. D[Laptop] or D{think}
-  const nodeWithDelim = `${esc}(?:\\s*[\\[\\(\\{>][^\\n]*)?`;
-  // Arrow pattern covering all standard Mermaid edge types
-  const arrow = '(?:--?>|---|-\\.->|==>|-\\.-)';
-  // Optional edge label  -->|text|  or  --> text
-  const optLabel = `(?:\\s*\\|[^|]*\\|)?`;
-
-  // Source: node (with optional delim) at line start, followed by arrow
-  const sourceRe = new RegExp(`^\\s*${nodeWithDelim}\\s*${arrow}`);
-  // Target: arrow, optional label, then node (with optional delim) at line end
-  const targetRe = new RegExp(`${arrow}${optLabel}\\s*${nodeWithDelim}\\s*$`);
-  // Chain: arrow, optional label, node, then another arrow
-  const chainRe = new RegExp(`${arrow}${optLabel}\\s*${esc}\\s*${arrow}`);
-
-  const styleRe = new RegExp(`^\\s*style\\s+${esc}\\s`);
-  const classRe = new RegExp(`^\\s*class\\s+${esc}\\s`);
-  // Pure definition: line starts with nodeId + delimiter (no arrow before it)
-  const pureDefRe = new RegExp(`^\\s*${esc}\\s*[\\[\\(\\{>]`);
+  const arrowSrc = '(?:--?>|---|-\\.->|==>|-\\.-)';
+  const arrowRe = new RegExp(arrowSrc);
+  const optLabelSrc = '(?:\\s*\\|[^|]*\\|)?';
 
   for (const line of lines) {
-    if (styleRe.test(line) || classRe.test(line)) continue;
-    if (pureDefRe.test(line)) continue;
-    if (sourceRe.test(line) || targetRe.test(line)) continue;
+    // 1. Remove style/class lines for this node (with word boundary)
+    if (new RegExp(`^\\s*style\\s+${esc}(?:\\s|$)`).test(line)) continue;
+    if (new RegExp(`^\\s*class\\s+${esc}(?:\\s|$)`).test(line)) continue;
 
-    if (chainRe.test(line)) {
-      // Reconnect: remove the node from the chain keeping one arrow
-      const cleaned = line.replace(
-        new RegExp(
-          `(\\s*${arrow}${optLabel}\\s*)${esc}(?:\\s*[\\[\\(\\{>][^\\n]*?)?(\\s*${arrow})`,
-          'g'
-        ),
-        (_match, before, after) => (after.trim() ? ' --> ' : '')
-      );
-      if (cleaned.trim()) result.push(cleaned);
+    // 2. Check if node has a label on this line BEFORE stripping
+    const hadLabel = nodeHasLabelOnLine(line, nodeId);
+
+    // 3. Strip all label definitions for this node on this line
+    const stripped = stripNodeLabelsOnLine(line, nodeId);
+
+    // 4. If no arrows in the stripped line → pure definition or bare ref
+    if (!arrowRe.test(stripped)) {
+      // If line is (or became) just the bare nodeId, remove it
+      if (new RegExp(`(^|[^A-Za-z0-9_])${esc}\\s*$`).test(stripped)) continue;
+      result.push(stripped);
       continue;
     }
 
-    result.push(line);
+    // 5. Chain pattern: arrow → nodeId → arrow → reconnect (skip nodeId)
+    //    e.g. "A --> B --> C" deleting B → "A --> C"
+    //    Must fire BEFORE source/target checks to avoid greedy consumption
+    const chainRe = new RegExp(
+      `(${arrowSrc})${optLabelSrc}\\s*${esc}\\s*(${arrowSrc})`
+    );
+    if (chainRe.test(stripped)) {
+      const reconnected = stripped.replace(
+        new RegExp(
+          `(${arrowSrc})${optLabelSrc}\\s*${esc}\\s*(${arrowSrc})`,
+          'g'
+        ),
+        '$1'
+      );
+      if (reconnected.trim()) result.push(reconnected);
+      continue;
+    }
+
+    // 6. If node is at the START (source position) and had NO label → remove line
+    //    e.g. "B --> C[End]" deleting bare B → remove
+    //    But "A[Alpha] --> AB[beta]" deleting A → keep (AB defined here)
+    if (new RegExp(`^\\s*${esc}(?:\\s|${arrowSrc})`).test(stripped) && !hadLabel) {
+      continue;
+    }
+
+    // 7. Otherwise keep the line (target position, or source that had a label)
+    result.push(stripped);
   }
 
   return result.join('\n');
