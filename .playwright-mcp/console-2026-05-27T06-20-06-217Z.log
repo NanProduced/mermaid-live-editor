@@ -1,0 +1,48 @@
+[     817ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[     937ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    1017ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    2239ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    2297ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    2341ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    3359ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    3430ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    3489ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    3534ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    3996ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    4049ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    4091ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    4127ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    4574ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    4630ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    4676ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    5320ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    5391ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    5445ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    5507ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    6126ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    6199ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    6247ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    6311ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    6936ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    7001ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    7061ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    7112ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    7727ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    7811ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    7871ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    8478ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    8549ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    8614ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    8664ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    9272ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    9344ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    9396ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    9447ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3002/src/lib/util/stats.ts:89
+[   10117ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[   10186ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[   10240ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[   10285ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3002/src/lib/util/stats.ts:89
+[   10859ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[   10925ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[   10983ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[   11041ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3002/src/lib/util/stats.ts:89
