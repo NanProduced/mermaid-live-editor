@@ -350,22 +350,26 @@
 
   /* Node linker: highlight decoration for lines linked to preview nodes */
   :global(.mermaid-node-highlight-line) {
-    background-color: rgba(59, 130, 246, 0.08);
+    background-color: rgba(59, 130, 246, 0.22) !important;
+    border-left: 3px solid #3b82f6 !important;
   }
 
   :global(#editor.mermaid-dark .mermaid-node-highlight-line) {
-    background-color: rgba(96, 165, 250, 0.12);
+    background-color: rgba(96, 165, 250, 0.28) !important;
+    border-left: 3px solid #60a5fa !important;
   }
 
   :global(.mermaid-node-highlight-glyph) {
-    width: 8px !important;
-    height: 8px !important;
-    margin: 6px 4px;
-    background-color: #3b82f6;
+    width: 10px !important;
+    height: 10px !important;
+    margin: 5px 4px;
+    background-color: #3b82f6 !important;
     border-radius: 50%;
+    box-shadow: 0 0 6px rgba(59, 130, 246, 0.7);
   }
 
   :global(#editor.mermaid-dark .mermaid-node-highlight-glyph) {
-    background-color: #60a5fa;
+    background-color: #60a5fa !important;
+    box-shadow: 0 0 8px rgba(96, 165, 250, 0.8);
   }
 </style>

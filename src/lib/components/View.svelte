@@ -316,16 +316,23 @@
   :global(.mermaid-node-active) circle,
   :global(.mermaid-node-active) polygon,
   :global(.mermaid-node-active) ellipse {
-    stroke: #3b82f6 !important;
-    stroke-width: 2.5px !important;
-    filter: drop-shadow(0 0 4px rgba(59, 130, 246, 0.4));
+    stroke: #2563eb !important;
+    stroke-width: 4px !important;
+    filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.7)) !important;
+    animation: mermaid-node-pulse 1.2s ease-in-out infinite;
   }
 
   :global(.dark .mermaid-node-active) rect,
   :global(.dark .mermaid-node-active) circle,
   :global(.dark .mermaid-node-active) polygon,
   :global(.dark .mermaid-node-active) ellipse {
-    stroke: #60a5fa !important;
-    filter: drop-shadow(0 0 6px rgba(96, 165, 250, 0.5));
+    stroke: #93c5fd !important;
+    stroke-width: 4px !important;
+    filter: drop-shadow(0 0 10px rgba(147, 197, 253, 0.8)) !important;
+  }
+
+  @keyframes mermaid-node-pulse {
+    0%, 100% { stroke-opacity: 1; }
+    50% { stroke-opacity: 0.5; }
   }
 </style>
