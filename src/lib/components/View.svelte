@@ -2,13 +2,23 @@
   import type { State, ValidatedState } from '$/types';
   import { recordRenderTime, shouldRefreshView } from '$/util/autoSync';
   import { render as renderDiagram } from '$/util/mermaid';
+  import {
+    activePreviewNode,
+    nodeMap,
+    previewHoverNodeId,
+    selectedNodeId,
+    showContextMenu
+  } from '$/util/nodeLinker';
+  import { findSvgNodeElement } from '$/util/nodeParser';
   import { PanZoomState } from '$/util/panZoom';
   import { inputStateStore, stateStore, updateCodeStore } from '$/util/state';
   import { saveStatistics } from '$/util/stats';
   import FontAwesome, { mayContainFontAwesome } from '$lib/components/FontAwesome.svelte';
+  import NodeContextMenu from '$lib/components/NodeContextMenu.svelte';
   import uniqueID from 'lodash-es/uniqueId';
   import type { MermaidConfig } from 'mermaid';
   import { mode } from 'mode-watcher';
+  import { get } from 'svelte/store';
   import { onMount } from 'svelte';
   import { Svg2Roughjs } from 'svg2roughjs';
 
@@ -38,6 +48,110 @@
       panZoomState.updateElement(graphDiv, state);
     } catch (error) {
       console.error('PanZoom error:', error);
+    }
+  };
+
+  // ─── Node Linker: bidirectional preview ↔ editor linking ───
+
+  let viewID = '';
+  let currentlyHighlightedElement: SVGElement | null = null;
+
+  /**
+   * Attach hover, click, and context menu listeners to all rendered SVG node groups.
+   * Called after each SVG re-render.
+   */
+  const attachNodeListeners = () => {
+    if (!container) return;
+
+    const nodeGroups = container.querySelectorAll<SVGGElement>('g[id]');
+    for (const g of nodeGroups) {
+      // Skip edge groups (Mermaid edge IDs start with `L-`)
+      if (g.id.startsWith('L-') || g.id.startsWith('edge-')) continue;
+
+      // Skip groups without visible shapes (not a node)
+      if (!g.querySelector('rect, circle, polygon, ellipse, foreignObject')) continue;
+
+      // Derive the user-facing node ID from the SVG group's id
+      const nodeId = extractNodeIdFromSvgId(g.id);
+      if (!nodeId) continue;
+
+      // Verify this node ID exists in our parsed node map
+      const nodes = get(nodeMap);
+      if (!nodes.has(nodeId)) continue;
+
+      g.style.cursor = 'pointer';
+
+      g.addEventListener('mouseenter', () => {
+        previewHoverNodeId.set(nodeId);
+      });
+
+      g.addEventListener('mouseleave', () => {
+        previewHoverNodeId.set(null);
+      });
+
+      g.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectedNodeId.update((prev) => (prev === nodeId ? null : nodeId));
+      });
+
+      g.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        selectedNodeId.set(nodeId);
+        showContextMenu(nodeId, e.clientX, e.clientY);
+      });
+    }
+  };
+
+  /**
+   * Extract the user-defined node ID from an SVG element's generated ID.
+   * Mermaid v11 prefixes IDs with the viewID (e.g. `graph-1-flowchart-A-0`).
+   * Falls back to patterns without prefix for robustness.
+   */
+  const extractNodeIdFromSvgId = (svgId: string): string | null => {
+    // Strip the current viewID prefix if present (Mermaid v11: `{viewID}-flowchart-{nodeId}-{n}`)
+    const effectiveId = svgId.startsWith(viewID + '-')
+      ? svgId.slice(viewID.length + 1)
+      : svgId;
+    // Also try generic prefix stripping (e.g. `graph-1-flowchart-A-0` → `flowchart-A-0`)
+    const generic = effectiveId.replace(/^[^-]+-\d+-/, '');
+
+    for (const id of [effectiveId, generic]) {
+      // Pattern: flowchart-{nodeId}-{number}
+      let match = /^flowchart-(.+)-\d+$/.exec(id);
+      if (match) return match[1];
+
+      // Pattern: D-{nodeId}-{number}
+      match = /^D-(.+)-\d+$/.exec(id);
+      if (match) return match[1];
+    }
+
+    // Pattern: plain nodeId (no prefix, no suffix)
+    const plainMatch = /^[A-Za-z_][\w-]*$/.exec(svgId);
+    if (plainMatch) return plainMatch[0];
+
+    return null;
+  };
+
+  /**
+   * Update the visual highlight on the SVG node that corresponds to the active node.
+   */
+  const updatePreviewHighlight = () => {
+    if (!container) return;
+
+    // Remove highlight from previously highlighted element
+    if (currentlyHighlightedElement) {
+      currentlyHighlightedElement.classList.remove('mermaid-node-active');
+      currentlyHighlightedElement = null;
+    }
+
+    const activeId = get(activePreviewNode);
+    if (!activeId) return;
+
+    const element = findSvgNodeElement(container, activeId);
+    if (element) {
+      element.classList.add('mermaid-node-active');
+      currentlyHighlightedElement = element;
     }
   };
 
@@ -77,7 +191,7 @@
 
         const scroll = view?.parentElement?.scrollTop;
         delete container.dataset.processed;
-        const viewID = uniqueID('graph-');
+        viewID = uniqueID('graph-');
         const {
           svg,
           bindFunctions,
@@ -118,6 +232,11 @@
           if (state.panZoom) {
             handlePanZoom(state, graphDiv);
           }
+
+          // Attach node interaction listeners after SVG render
+          attachNodeListeners();
+          // Update highlight for any active node from editor
+          updatePreviewHighlight();
         }
         if (view?.parentElement && scroll) {
           view.parentElement.scrollTop = scroll;
@@ -141,11 +260,26 @@
     setupPanZoomObserver();
     // Queue state changes to avoid race condition
     let pendingStateChange = Promise.resolve();
-    stateStore.subscribe((state) => {
+    const unsubscribeState = stateStore.subscribe((state) => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       pendingStateChange = pendingStateChange.then(() => handleStateChange(state).catch(() => {}));
     });
+
+    // React to active node changes from editor (cursor movement / preview click)
+    const unsubscribeActiveNode = activePreviewNode.subscribe(() => {
+      updatePreviewHighlight();
+    });
+
+    return () => {
+      unsubscribeState();
+      unsubscribeActiveNode();
+    };
   });
+
+  // Click on empty space in preview to deselect
+  const handleViewClick = () => {
+    selectedNodeId.set(null);
+  };
 </script>
 
 <FontAwesome bind:waitForFontAwesomeToLoad />
@@ -153,9 +287,18 @@
 <div
   id="view"
   bind:this={view}
+  role="application"
+  aria-label="Mermaid diagram preview"
+  onclick={handleViewClick}
+  onkeydown={(e) => {
+    if (e.key === 'Escape') selectedNodeId.set(null);
+  }}
+  tabindex={-1}
   class={['h-full w-full', shouldShowGrid && `grid-bg-${$mode}`, error && 'opacity-50']}>
   <div id="container" bind:this={container} class="h-full overflow-auto"></div>
 </div>
+
+<NodeContextMenu />
 
 <style>
   .grid-bg-light {
@@ -166,5 +309,30 @@
   .grid-bg-dark {
     background-size: 30px 30px;
     background-image: radial-gradient(circle, #46464646 2px, #0000 2px);
+  }
+
+  /* Highlight for SVG nodes linked to editor cursor or selection */
+  :global(.mermaid-node-active) rect,
+  :global(.mermaid-node-active) circle,
+  :global(.mermaid-node-active) polygon,
+  :global(.mermaid-node-active) ellipse {
+    stroke: #2563eb !important;
+    stroke-width: 4px !important;
+    filter: drop-shadow(0 0 8px rgba(37, 99, 235, 0.7)) !important;
+    animation: mermaid-node-pulse 1.2s ease-in-out infinite;
+  }
+
+  :global(.dark .mermaid-node-active) rect,
+  :global(.dark .mermaid-node-active) circle,
+  :global(.dark .mermaid-node-active) polygon,
+  :global(.dark .mermaid-node-active) ellipse {
+    stroke: #93c5fd !important;
+    stroke-width: 4px !important;
+    filter: drop-shadow(0 0 10px rgba(147, 197, 253, 0.8)) !important;
+  }
+
+  @keyframes mermaid-node-pulse {
+    0%, 100% { stroke-opacity: 1; }
+    50% { stroke-opacity: 0.5; }
   }
 </style>

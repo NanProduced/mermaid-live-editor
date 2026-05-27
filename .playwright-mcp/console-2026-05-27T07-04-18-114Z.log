@@ -1,0 +1,559 @@
+[      34ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[     706ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[     776ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[     826ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[     872ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[     872ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    1801ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    1864ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    1917ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    1974ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    1974ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    2596ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    2663ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    2715ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    2786ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    2786ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    3385ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    3447ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    3505ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    3557ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    3557ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    4195ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    4265ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    4319ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    4354ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    4355ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    4965ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    5027ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    5075ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    5108ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    5108ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    5727ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    5791ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    5853ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    5892ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    5893ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    6620ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    6685ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    6741ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    6778ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    6778ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    7379ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    7447ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    7501ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    7536ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    7536ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    8146ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    8210ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    8268ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    8308ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    8308ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    8895ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    8961ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    9017ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    9059ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    9059ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    9643ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[    9713ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[    9767ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[    9807ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[    9807ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   10395ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   10451ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   10504ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   10544ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   10544ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   11139ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   11199ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   11258ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   11298ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   11299ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   11894ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   11959ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   12014ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   12068ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   12068ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   12727ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   12794ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   12854ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   12905ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   12905ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   13517ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   13585ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   13640ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   13681ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   13681ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   14281ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   14349ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   14402ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   14437ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   14437ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   15561ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   15638ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   15695ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   15733ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   15733ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   16326ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   16386ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   16445ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   16485ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   16485ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   17058ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   17128ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   17173ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   17224ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   17224ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   17874ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   17934ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   17989ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   18030ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   18030ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   18674ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   18743ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   18795ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   18831ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   18831ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   19443ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   19504ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   19552ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   19589ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   19589ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   20186ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   20239ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   20292ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   20330ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   20330ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   20927ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   20991ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   21048ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   21083ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   21083ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   21677ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   21740ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   21796ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   21836ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   21837ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   22446ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   22515ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   22569ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   22606ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   22606ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   23192ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   23257ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   23310ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   23346ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   23347ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   23987ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   24053ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   24115ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   24157ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   24157ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   24766ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   24829ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   24888ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   24929ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   24929ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   25599ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   25671ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   25719ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   25754ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   25754ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   26399ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   26464ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   26512ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   26549ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   26550ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   27162ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   27226ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   27271ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   27300ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   27300ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 25-50} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   27925ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   27992ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   28047ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   28084ms] [ERROR] view fail ReferenceError: viewID is not defined
+    at extractNodeIdFromSvgId (http://localhost:3001/src/lib/components/View.svelte:150:40)
+    at attachNodeListeners (http://localhost:3001/src/lib/components/View.svelte:110:19)
+    at handleStateChange (http://localhost:3001/src/lib/components/View.svelte:289:6) @ http://localhost:3001/src/lib/components/View.svelte:303
+[   28084ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   28780ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   28850ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   28893ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   28928ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   29554ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   29618ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   29681ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   29721ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   30297ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   30352ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   30405ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   30457ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   31098ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   31161ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   31217ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   31273ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   31890ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   31959ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   32004ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   32056ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   32675ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   32739ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   32791ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   32844ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   33460ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   33525ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   33578ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   33628ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   34194ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   34259ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   34311ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   34353ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   34966ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   35029ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   35079ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   35127ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   35733ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   35792ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   35850ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   35890ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   36461ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   36525ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   36585ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   36616ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   37291ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   37352ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   37410ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   37460ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   38050ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   38109ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   38159ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   38203ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   38859ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   38915ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   38971ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   39010ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   39649ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   39718ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   39772ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   39812ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   40373ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   40435ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   40485ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   40521ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   41165ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   41223ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   41281ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   41325ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   41957ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   42025ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   42078ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   42115ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   42715ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   42786ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   42840ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   43489ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   43552ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   43608ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   43651ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   44251ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   44308ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   44365ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   44403ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   44993ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   45059ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   45115ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   45159ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   45732ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   45806ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   45859ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   45897ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   46515ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   46573ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   46634ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   46688ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   47392ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   47455ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   47514ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   47553ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   48121ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   48184ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   48239ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   48276ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   48881ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   48951ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   49004ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   49050ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   49663ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   49743ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   49799ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   49835ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   50480ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   50550ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   50604ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   50643ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   51267ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   51337ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   51391ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   51432ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   52032ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   52101ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   52155ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   52193ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   52813ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   52885ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   52940ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   52988ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   53567ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   53633ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   53691ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   53742ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   54363ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   54434ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   54489ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   54547ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   55218ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   55283ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   55336ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   55386ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   56220ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   56285ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   56332ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   56973ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   57044ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   57090ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   57127ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   57717ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   57788ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   57842ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   57888ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   58509ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   58580ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   58633ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   58668ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   59310ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   59380ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   59433ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   59478ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   60090ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   60159ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   60209ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   60255ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   60946ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   61013ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   61066ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   61107ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   61709ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   61784ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   61839ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   61882ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   62490ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   62560ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   62610ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   62645ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   63250ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   63319ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   63373ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   63409ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   64020ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   64079ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   64139ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   64179ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   64836ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   64899ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   64952ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   64988ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   65623ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   65692ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   65746ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   65800ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   66462ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   66517ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   66567ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   66602ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   67356ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   67422ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   67484ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   67524ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   68117ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   68180ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   68235ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   68273ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   68902ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   68963ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   69021ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   69060ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   69624ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   69694ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   69747ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   69799ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   70388ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   70450ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   70509ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   70544ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   71132ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   71190ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   71249ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   71296ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   71894ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   71961ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   72015ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   72062ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   72648ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   72717ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   72766ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   72809ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   73463ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   73531ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   73587ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   73632ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   74201ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   74263ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   74320ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   74394ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 100-200} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   75010ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   75076ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   75129ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   75206ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 100-200} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   75831ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   75902ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   75957ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   76010ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   76645ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   76705ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   76761ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   76818ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   77447ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   77513ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   77573ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   77615ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   78210ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   78264ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   78316ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   78355ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   78983ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   79046ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   79102ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   79143ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   79710ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   79776ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   79824ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   79860ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   80500ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   80555ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   80611ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   80649ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   81243ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   81298ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   81351ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   81388ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   81966ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   82032ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   82082ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   82117ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   82743ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3001/src/lib/util/stats.ts:89
+[   82809ms] [LOG] Loading '' @ http://localhost:3001/src/lib/util/state.ts:192
+[   82865ms] [LOG] Registration successful, scope is: http://localhost:3001/ @ http://localhost:3001/src/routes/+layout.svelte:42
+[   82898ms] [LOG] [plausible] render {diagramType: flowchart-v2, isRough: false, lengthBucket: 0-10, renderTimeMsBucket: 50-100} @ http://localhost:3001/src/lib/util/stats.ts:89
