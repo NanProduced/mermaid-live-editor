@@ -19,6 +19,7 @@
   import { Toggle } from '$/components/ui/toggle';
   import VersionSecurityToolbar from '$/components/VersionSecurityToolbar.svelte';
   import View from '$/components/View.svelte';
+  import NodeContextMenu from '$/components/NodeContextMenu.svelte';
   import type { EditorMode, Tab } from '$/types';
   import { shouldShowEditorChooser } from '$/util/migration/domainMigration';
   import { PanZoomState } from '$/util/panZoom';
@@ -154,3 +155,4 @@
 </div>
 
 <EditorChooserModal bind:open={showEditorChooser} />
+<NodeContextMenu />

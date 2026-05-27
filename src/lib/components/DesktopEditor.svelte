@@ -4,6 +4,7 @@
   import { stateStore, urlsStore } from '$/util/state';
   import { logMermaidChartClick } from '$/util/stats';
   import { AIPromptViewZoneManager } from '$lib/util/AIPromptViewZoneManager';
+  import { coordinationStore } from '$lib/util/coordinationStore';
   import { initEditor } from '$lib/util/monacoExtra';
   import { errorDebug } from '$lib/util/util';
   import { mode } from 'mode-watcher';
@@ -30,6 +31,7 @@
   let showPopup = $state(false);
   let popupPosition = $state({ top: 0, lineNumber: 0 });
   let decorationsCollection: monaco.editor.IEditorDecorationsCollection | undefined;
+  let nodeHighlightDecorations: monaco.editor.IEditorDecorationsCollection | undefined;
   let input = $state('');
   let lastMouseLine = 0;
   const aiPromptManager = new AIPromptViewZoneManager();
@@ -120,6 +122,7 @@
     editor = monaco.editor.create(divElement, editorOptions);
     aiPromptManager.setEditor(editor);
     decorationsCollection = editor.createDecorationsCollection([]);
+    nodeHighlightDecorations = editor.createDecorationsCollection([]);
 
     editor.onMouseDown((e) => {
       const isGutter = e.target.type === monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN;
@@ -154,6 +157,7 @@
       // Clear decorations if not in 'code' mode, or if the model changes
       if (editorMode !== 'code' || editor.getModel()?.id !== mermaidModel.id) {
         decorationsCollection?.clear();
+        nodeHighlightDecorations?.clear();
       }
 
       // Update editor text if it's different
@@ -183,6 +187,57 @@
       renderAIPromptGutterGlyphIcon();
     });
 
+    // Publish cursor line to coordination store for preview highlighting
+    editor.onDidChangeCursorPosition((e) => {
+      if (editor?.getModel()?.id !== mermaidModel.id) return;
+      coordinationStore.update((c) => ({ ...c, cursorLine: e.position.lineNumber }));
+    });
+
+    // Subscribe to hoveredNodeId for line highlighting
+    const unsubscribeCoordHover = coordinationStore.subscribe(({ hoveredNodeId, parsedSource }) => {
+      if (!editor || !nodeHighlightDecorations || !parsedSource) return;
+      if (editor.getModel()?.id !== mermaidModel.id) return;
+
+      if (hoveredNodeId) {
+        const nodeDef = parsedSource.nodes.get(hoveredNodeId);
+        if (nodeDef) {
+          nodeHighlightDecorations.set([
+            {
+              range: new monaco.Range(nodeDef.line, 1, nodeDef.line, 1),
+              options: {
+                isWholeLine: true,
+                className: 'mermaid-node-line-highlight'
+              }
+            }
+          ]);
+        } else {
+          nodeHighlightDecorations.clear();
+        }
+      } else {
+        nodeHighlightDecorations.clear();
+      }
+    });
+
+    // Subscribe to selectedNodeId for cursor jumping (one-shot)
+    let lastSelectedId: string | null = null;
+    const unsubscribeCoordSelect = coordinationStore.subscribe(({ selectedNodeId, parsedSource }) => {
+      if (!editor || !selectedNodeId || !parsedSource) return;
+      if (selectedNodeId === lastSelectedId) return;
+      lastSelectedId = selectedNodeId;
+
+      const nodeDef = parsedSource.nodes.get(selectedNodeId);
+      if (nodeDef) {
+        editor.revealLineInCenter(nodeDef.line);
+        editor.setPosition({ lineNumber: nodeDef.line, column: 1 });
+        editor.focus();
+      }
+      // Clear after processing
+      setTimeout(() => {
+        coordinationStore.update((c) => ({ ...c, selectedNodeId: null }));
+        lastSelectedId = null;
+      }, 0);
+    });
+
     const unsubscribeMode = mode.subscribe((mode) => {
       if (editor) {
         monaco.editor.setTheme(`mermaid${mode === 'dark' ? '-dark' : ''}`);
@@ -205,6 +260,8 @@
     return () => {
       unsubscribeState();
       unsubscribeMode();
+      unsubscribeCoordHover();
+      unsubscribeCoordSelect();
       resizeObserver.disconnect();
       jsonModel.dispose();
       mermaidModel.dispose();

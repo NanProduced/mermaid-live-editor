@@ -2,9 +2,11 @@
   import type { State, ValidatedState } from '$/types';
   import { recordRenderTime, shouldRefreshView } from '$/util/autoSync';
   import { render as renderDiagram } from '$/util/mermaid';
+  import { getNodeIdFromSvgElement } from '$/util/mermaid';
   import { PanZoomState } from '$/util/panZoom';
   import { inputStateStore, stateStore, updateCodeStore } from '$/util/state';
   import { saveStatistics } from '$/util/stats';
+  import { coordinationStore, cursorNodeId } from '$/util/coordinationStore';
   import FontAwesome, { mayContainFontAwesome } from '$lib/components/FontAwesome.svelte';
   import uniqueID from 'lodash-es/uniqueId';
   import type { MermaidConfig } from 'mermaid';
@@ -25,6 +27,78 @@
   let panZoom = true;
   let manualUpdate = true;
   let waitForFontAwesomeToLoad: FontAwesome['waitForFontAwesomeToLoad'] | undefined = $state();
+
+  let lastHighlightedNode: Element | null = null;
+
+  const findNodeAncestor = (el: Element, root: Element): Element | null => {
+    let current: Element | null = el;
+    while (current && current !== root) {
+      if (current.tagName === 'g' && current.classList?.contains('node')) {
+        return current;
+      }
+      current = current.parentElement;
+    }
+    return null;
+  };
+
+  const handleContainerMouseMove = (e: MouseEvent) => {
+    if (!container) return;
+    const nodeG = findNodeAncestor(e.target as Element, container);
+    if (nodeG) {
+      const nodeId = getNodeIdFromSvgElement(nodeG);
+      coordinationStore.update((c) => ({ ...c, hoveredNodeId: nodeId }));
+    } else {
+      coordinationStore.update((c) => ({ ...c, hoveredNodeId: null }));
+    }
+  };
+
+  const handleContainerMouseLeave = () => {
+    coordinationStore.update((c) => ({ ...c, hoveredNodeId: null }));
+  };
+
+  const handleContainerClick = (e: MouseEvent) => {
+    if (!container) return;
+    const nodeG = findNodeAncestor(e.target as Element, container);
+    if (nodeG) {
+      const nodeId = getNodeIdFromSvgElement(nodeG);
+      coordinationStore.update((c) => ({ ...c, selectedNodeId: nodeId }));
+    }
+  };
+
+  const handleContainerContextMenu = (e: MouseEvent) => {
+    if (!container) return;
+    const nodeG = findNodeAncestor(e.target as Element, container);
+    if (nodeG) {
+      e.preventDefault();
+      const nodeId = getNodeIdFromSvgElement(nodeG);
+      coordinationStore.update((c) => ({
+        ...c,
+        contextMenu: { visible: true, nodeId, x: e.clientX, y: e.clientY }
+      }));
+    }
+  };
+
+  const clearNodeHighlight = () => {
+    if (lastHighlightedNode) {
+      lastHighlightedNode.classList.remove('mermaid-node-highlight');
+      lastHighlightedNode = null;
+    }
+  };
+
+  const applyNodeHighlight = (nodeId: string | null) => {
+    clearNodeHighlight();
+    if (nodeId && container) {
+      const allNodes = container.querySelectorAll('g.node');
+      for (const nodeEl of allNodes) {
+        const extractedId = getNodeIdFromSvgElement(nodeEl);
+        if (extractedId === nodeId) {
+          nodeEl.classList.add('mermaid-node-highlight');
+          lastHighlightedNode = nodeEl;
+          break;
+        }
+      }
+    }
+  };
 
   // Set up panZoom state observer to update the store when pan/zoom changes
   const setupPanZoomObserver = () => {
@@ -65,6 +139,9 @@
         if (!shouldRefreshView()) {
           return;
         }
+
+        // Clear highlight state before re-render
+        clearNodeHighlight();
 
         code = state.code;
         config = state.mermaid;
@@ -145,6 +222,29 @@
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       pendingStateChange = pendingStateChange.then(() => handleStateChange(state).catch(() => {}));
     });
+
+    // Set up event delegation on container for node interactions
+    if (container) {
+      container.addEventListener('mousemove', handleContainerMouseMove);
+      container.addEventListener('mouseleave', handleContainerMouseLeave);
+      container.addEventListener('click', handleContainerClick, true);
+      container.addEventListener('contextmenu', handleContainerContextMenu);
+    }
+
+    // Subscribe to cursorNodeId for preview highlighting
+    const unsubscribeCursorNode = cursorNodeId.subscribe((nodeId) => {
+      applyNodeHighlight(nodeId);
+    });
+
+    return () => {
+      unsubscribeCursorNode();
+      if (container) {
+        container.removeEventListener('mousemove', handleContainerMouseMove);
+        container.removeEventListener('mouseleave', handleContainerMouseLeave);
+        container.removeEventListener('click', handleContainerClick, true);
+        container.removeEventListener('contextmenu', handleContainerContextMenu);
+      }
+    };
   });
 </script>
 

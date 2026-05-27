@@ -12,6 +12,8 @@ import { defaultMermaidConfig, parse } from './mermaid';
 import { localStorage, persist } from './persist';
 import { deserializeState, pakoSerde, serializeState } from './serde';
 import { errorDebug, formatJSON, getUTMSource, MCBaseURL } from './util';
+import { coordinationStore } from './coordinationStore';
+import { parseSource } from './mermaidSourceParser';
 
 export const defaultState: State = {
   code: `flowchart TD
@@ -127,6 +129,12 @@ export const stateStore: Readable<ValidatedState> = derived(
   },
   currentState
 );
+
+// Keep parsed source in coordination store for editor-preview linking
+inputStateStore.subscribe((state) => {
+  const parsed = parseSource(state.code);
+  coordinationStore.update((c) => ({ ...c, parsedSource: parsed }));
+});
 
 export const urlsStore = derived([stateStore], ([{ code, serialized }]) => {
   const { krokiRendererUrl, rendererUrl } = env;

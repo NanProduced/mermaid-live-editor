@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { EditorProps } from '$/types';
   import { stateStore } from '$/util/state';
+  import { coordinationStore } from '$/util/coordinationStore';
   import { json, jsonLanguage } from '@codemirror/lang-json';
   import { markdown } from '@codemirror/lang-markdown';
   import { yamlFrontmatter } from '@codemirror/lang-yaml';
@@ -38,6 +39,12 @@
               }
               currentText = newText;
               onUpdate(newText);
+            }
+            // Publish cursor line to coordination store for preview highlighting
+            if (update.selectionSet) {
+              const pos = update.state.selection.main.head;
+              const line = update.state.doc.lineAt(pos).number;
+              coordinationStore.update((c) => ({ ...c, cursorLine: line }));
             }
           }),
           EditorView.theme({

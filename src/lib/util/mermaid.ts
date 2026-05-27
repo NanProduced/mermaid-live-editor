@@ -15,8 +15,12 @@ export const render = async (
 ): Promise<RenderResult> => {
   await init;
 
-  // Should be able to call this multiple times without any issues.
-  mermaid.initialize(config);
+  const enhancedConfig: MermaidConfig = {
+    ...config,
+    deterministicIds: true,
+    deterministicIDSeed: 'mermaid-live-editor'
+  };
+  mermaid.initialize(enhancedConfig);
   return await mermaid.render(id, code);
 };
 
@@ -46,6 +50,24 @@ export const standardizeDiagramType = (diagramType: string) => {
     }
   }
 };
+
+export function getNodeIdFromSvgElement(el: Element): string | null {
+  const dataId = el.getAttribute('data-id');
+  if (dataId && !dataId.startsWith('L-')) {
+    return dataId;
+  }
+
+  const id = el.id;
+  // With deterministicIDSeed, IDs look like: flowchart-mermaid-live-editor-A-0
+  // Without seed: flowchart-A-0
+  // Match the node ID segment before the final numeric suffix
+  const match = id.match(/flowchart-(?:[\w-]+-)?([A-Za-z_]\w*)-\d+$/);
+  if (match) {
+    return match[1];
+  }
+
+  return null;
+}
 
 type DiagramDefinition = (typeof diagramData)[number];
 
