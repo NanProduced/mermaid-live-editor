@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { EditorProps } from '$/types';
   import { env } from '$/util/env';
+  import { linkageStore, setCursorNode } from '$/util/linkage';
   import { stateStore, urlsStore } from '$/util/state';
   import { logMermaidChartClick } from '$/util/stats';
   import { AIPromptViewZoneManager } from '$lib/util/AIPromptViewZoneManager';
@@ -30,6 +31,7 @@
   let showPopup = $state(false);
   let popupPosition = $state({ top: 0, lineNumber: 0 });
   let decorationsCollection: monaco.editor.IEditorDecorationsCollection | undefined;
+  let linkageDecorationsCollection: monaco.editor.IEditorDecorationsCollection | undefined;
   let input = $state('');
   let lastMouseLine = 0;
   const aiPromptManager = new AIPromptViewZoneManager();
@@ -90,6 +92,53 @@
     renderAIPromptGutterGlyphIcon();
   };
 
+  const updateLinkageDecorations = (hoveredNodeId: string | null, selectedNodeId: string | null, nodeMappings: typeof $linkageStore.nodeMappings) => {
+    if (!linkageDecorationsCollection || !editor) return;
+    if (editor.getModel()?.id !== mermaidModel.id) {
+      linkageDecorationsCollection.clear();
+      return;
+    }
+
+    const decorations: monaco.editor.IModelDeltaDecoration[] = [];
+
+    if (hoveredNodeId) {
+      const mapping = nodeMappings.find((m) => m.nodeId === hoveredNodeId);
+      if (mapping) {
+        decorations.push({
+          range: new monaco.Range(mapping.lineNumber, 1, mapping.lineNumber, 1),
+          options: {
+            isWholeLine: true,
+            className: 'linkage-hover-highlight'
+          }
+        });
+      }
+    }
+
+    if (selectedNodeId && selectedNodeId !== hoveredNodeId) {
+      const mapping = nodeMappings.find((m) => m.nodeId === selectedNodeId);
+      if (mapping) {
+        decorations.push({
+          range: new monaco.Range(mapping.lineNumber, 1, mapping.lineNumber, 1),
+          options: {
+            isWholeLine: true,
+            className: 'linkage-select-highlight'
+          }
+        });
+      }
+    }
+
+    linkageDecorationsCollection.set(decorations);
+  };
+
+  const jumpToNode = (nodeId: string, nodeMappings: typeof $linkageStore.nodeMappings) => {
+    if (!editor) return;
+    const mapping = nodeMappings.find((m) => m.nodeId === nodeId);
+    if (!mapping) return;
+    editor.revealLineInCenter(mapping.lineNumber);
+    editor.setPosition({ lineNumber: mapping.lineNumber, column: mapping.startColumn });
+    editor.focus();
+  };
+
   onMount(() => {
     self.MonacoEnvironment = {
       getWorker(_, label) {
@@ -120,6 +169,7 @@
     editor = monaco.editor.create(divElement, editorOptions);
     aiPromptManager.setEditor(editor);
     decorationsCollection = editor.createDecorationsCollection([]);
+    linkageDecorationsCollection = editor.createDecorationsCollection([]);
 
     editor.onMouseDown((e) => {
       const isGutter = e.target.type === monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN;
@@ -139,6 +189,16 @@
       onUpdate(currentText);
     });
 
+    editor.onDidChangeCursorPosition((e) => {
+      if (!editor || editor.getModel()?.id !== mermaidModel.id) {
+        setCursorNode(null);
+        return;
+      }
+      const lineNumber = e.position.lineNumber;
+      const mapping = $linkageStore.nodeMappings.find((m) => m.lineNumber === lineNumber);
+      setCursorNode(mapping ? mapping.nodeId : null);
+    });
+
     const unsubscribeState = stateStore.subscribe(({ errorMarkers, editorMode, code, mermaid }) => {
       if (!editor) {
         return;
@@ -154,6 +214,7 @@
       // Clear decorations if not in 'code' mode, or if the model changes
       if (editorMode !== 'code' || editor.getModel()?.id !== mermaidModel.id) {
         decorationsCollection?.clear();
+        linkageDecorationsCollection?.clear();
       }
 
       // Update editor text if it's different
@@ -167,6 +228,15 @@
 
       // Display/clear errors
       monaco.editor.setModelMarkers(model, 'mermaid', errorMarkers);
+    });
+
+    let prevSelectedNodeId: string | null = null;
+    const unsubscribeLinkage = linkageStore.subscribe((ls) => {
+      updateLinkageDecorations(ls.hoveredNodeId, ls.selectedNodeId, ls.nodeMappings);
+      if (ls.selectedNodeId && ls.selectedNodeId !== prevSelectedNodeId) {
+        jumpToNode(ls.selectedNodeId, ls.nodeMappings);
+      }
+      prevSelectedNodeId = ls.selectedNodeId;
     });
 
     editor.onMouseMove((e) => {
@@ -204,6 +274,7 @@
 
     return () => {
       unsubscribeState();
+      unsubscribeLinkage();
       unsubscribeMode();
       resizeObserver.disconnect();
       jsonModel.dispose();
@@ -251,5 +322,22 @@
   :global(#editor.mermaid-dark .suggestion-icon) {
     background-color: #2e4d6b;
     background-image: url('/icons/use-chat-dark.svg');
+  }
+
+  :global(.linkage-hover-highlight) {
+    background-color: rgba(59, 130, 246, 0.12) !important;
+  }
+
+  :global(#editor.mermaid-dark .linkage-hover-highlight) {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+  }
+
+  :global(.linkage-select-highlight) {
+    background-color: rgba(59, 130, 246, 0.2) !important;
+    border-left: 3px solid rgb(59, 130, 246) !important;
+  }
+
+  :global(#editor.mermaid-dark .linkage-select-highlight) {
+    background-color: rgba(59, 130, 246, 0.3) !important;
   }
 </style>
