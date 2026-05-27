@@ -117,3 +117,19 @@ body {
 .d {
   @apply border border-red-500;
 }
+
+/* Monaco editor: highlight line for hovered/selected node from preview */
+:global(.mermaid-node-line-highlight) {
+  background-color: rgba(255, 213, 79, 0.15) !important;
+  border-left: 3px solid hsl(340 100% 44%) !important;
+}
+
+:global(.mermaid-dark .mermaid-node-line-highlight) {
+  background-color: rgba(255, 213, 79, 0.25) !important;
+}
+
+/* SVG preview: highlight node when cursor is on its definition in editor */
+:global(.mermaid-node-highlight) {
+  filter: drop-shadow(0 0 6px hsl(340 100% 44% / 0.7));
+  transition: filter 0.15s ease-in-out;
+}
