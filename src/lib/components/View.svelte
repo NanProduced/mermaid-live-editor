@@ -1,7 +1,16 @@
 <script lang="ts">
   import type { State, ValidatedState } from '$/types';
   import { recordRenderTime, shouldRefreshView } from '$/util/autoSync';
+  import {
+    closeContextMenu,
+    linkageStore,
+    openContextMenu,
+    setHoveredNode,
+    setSelectedNode,
+    updateNodeMappings
+  } from '$/util/linkage';
   import { render as renderDiagram } from '$/util/mermaid';
+  import { extractNodeIdFromSvgElement, findNodeSvgElement } from '$/util/mermaidParser';
   import { PanZoomState } from '$/util/panZoom';
   import { inputStateStore, stateStore, updateCodeStore } from '$/util/state';
   import { saveStatistics } from '$/util/stats';
@@ -38,6 +47,21 @@
       panZoomState.updateElement(graphDiv, state);
     } catch (error) {
       console.error('PanZoom error:', error);
+    }
+  };
+
+  let lastRenderedDiagramType: string | undefined;
+
+  const applyPreviewHighlight = (nodeId: string | null) => {
+    if (!container) return;
+    container.querySelectorAll('g.node.linkage-highlight').forEach((el) => {
+      el.classList.remove('linkage-highlight');
+    });
+    if (nodeId) {
+      const el = findNodeSvgElement(container, nodeId);
+      if (el) {
+        el.classList.add('linkage-highlight');
+      }
     }
   };
 
@@ -84,6 +108,7 @@
           diagramType: detectedDiagramType
         } = await renderDiagram(JSON.parse(state.mermaid) as MermaidConfig, code, viewID);
         diagramType = detectedDiagramType;
+        lastRenderedDiagramType = detectedDiagramType;
         if (svg.length > 0) {
           // eslint-disable-next-line svelte/no-dom-manipulating
           container.innerHTML = svg;
@@ -123,6 +148,9 @@
           view.parentElement.scrollTop = scroll;
         }
         error = false;
+
+        updateNodeMappings(code, diagramType ?? null);
+        applyPreviewHighlight($linkageStore.cursorNodeId);
       } else if (manualUpdate) {
         manualUpdate = false;
       }
@@ -137,14 +165,55 @@
     });
   };
 
+  const handleContainerMouseOver = (e: MouseEvent) => {
+    const nodeId = extractNodeIdFromSvgElement(e.target as Element);
+    if (nodeId) {
+      setHoveredNode(nodeId);
+    }
+  };
+
+  const handleContainerMouseOut = (e: MouseEvent) => {
+    const nodeId = extractNodeIdFromSvgElement(e.target as Element);
+    if (nodeId) {
+      setHoveredNode(null);
+    }
+  };
+
+  const handleContainerClick = (e: MouseEvent) => {
+    const nodeId = extractNodeIdFromSvgElement(e.target as Element);
+    if (nodeId) {
+      setSelectedNode(nodeId);
+    } else {
+      closeContextMenu();
+    }
+  };
+
+  const handleContainerContextMenu = (e: MouseEvent) => {
+    const nodeId = extractNodeIdFromSvgElement(e.target as Element);
+    if (nodeId) {
+      e.preventDefault();
+      openContextMenu(nodeId, e.clientX, e.clientY);
+    }
+  };
+
   onMount(() => {
     setupPanZoomObserver();
+
+    const unsubLinkage = linkageStore.subscribe((ls) => {
+      applyPreviewHighlight(ls.cursorNodeId);
+    });
+
     // Queue state changes to avoid race condition
     let pendingStateChange = Promise.resolve();
-    stateStore.subscribe((state) => {
+    const unsubState = stateStore.subscribe((state) => {
       // eslint-disable-next-line @typescript-eslint/no-empty-function
       pendingStateChange = pendingStateChange.then(() => handleStateChange(state).catch(() => {}));
     });
+
+    return () => {
+      unsubLinkage();
+      unsubState();
+    };
   });
 </script>
 
@@ -154,7 +223,17 @@
   id="view"
   bind:this={view}
   class={['h-full w-full', shouldShowGrid && `grid-bg-${$mode}`, error && 'opacity-50']}>
-  <div id="container" bind:this={container} class="h-full overflow-auto"></div>
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <div
+    id="container"
+    bind:this={container}
+    class="h-full overflow-auto"
+    data-testid="mermaid-preview-container"
+    onmouseover={handleContainerMouseOver}
+    onmouseout={handleContainerMouseOut}
+    onclick={handleContainerClick}
+    oncontextmenu={handleContainerContextMenu}></div>
 </div>
 
 <style>
@@ -166,5 +245,18 @@
   .grid-bg-dark {
     background-size: 30px 30px;
     background-image: radial-gradient(circle, #46464646 2px, #0000 2px);
+  }
+
+  :global(#container g.node.linkage-highlight rect),
+  :global(#container g.node.linkage-highlight circle),
+  :global(#container g.node.linkage-highlight polygon),
+  :global(#container g.node.linkage-highlight path) {
+    filter: drop-shadow(0 0 6px rgba(59, 130, 246, 0.8));
+    stroke: rgb(59, 130, 246) !important;
+    stroke-width: 2px !important;
+  }
+
+  :global(#container g.node) {
+    cursor: pointer;
   }
 </style>

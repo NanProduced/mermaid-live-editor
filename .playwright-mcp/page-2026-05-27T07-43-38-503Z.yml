@@ -1,0 +1,145 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - region "Notifications alt+T"
+    - main [ref=e3]:
+      - generic [ref=e4]:
+        - button [ref=e6]:
+          - banner [ref=e7]:
+            - link "Try Mermaid Advanced Editor — OSS users get 10% off with code JS26 Get started" [ref=e9] [cursor=pointer]:
+              - /url: https://mermaid.ai/app/user/billing/checkout?utm_campaign=oss_coupon&utm_medium=banner_ad&utm_source=mermaid_live_editor&coupon=arDfyFT8&tier=plus
+              - generic [ref=e10]: Try Mermaid Advanced Editor — OSS users get 10% off with code JS26
+              - button "Get started" [ref=e11]
+            - button "Dismiss banner" [ref=e12]:
+              - img
+        - navigation [ref=e13]:
+          - generic [ref=e14]:
+            - button [ref=e15]:
+              - img [ref=e16]
+            - img [ref=e18]
+            - link "Mermaid Live Editor" [ref=e21] [cursor=pointer]:
+              - /url: /
+          - generic [ref=e22]:
+            - button [ref=e23]:
+              - button [ref=e24]:
+                - img
+            - separator [ref=e25]
+            - button [ref=e26]:
+              - img
+            - button "Share" [ref=e27]
+            - button "Mermaid Chart Save diagram" [ref=e28]:
+              - link "Mermaid Chart Save diagram" [ref=e30] [cursor=pointer]:
+                - /url: https://mermaid.ai/app/plugin/save?state=pako:eNpVjU1Pg0AURf_K5K00oU2x5WsWJha0mya66Ero4qU8GCLMkGFIrcB_d2hj1FnNzT3nvgFOKifgUNTqfBKoDTskmWT2PaWx0FVnGuyObLF4HHdkWKMkXUa2vdsp1gnVtpUs72_8doZYPOxnjJgRlfyYblV89V8ljSxJ99ga1R7_NoezGtlzWr0JO_-_EZqs9ZIWyAtcnFCzGPURHCh1lQM3uicHGtINzhGGWc7ACGooA26_ORXY1yaDTE5Wa1G-K9X8mFr1pQA7XXc29W2OhpIKS42_CMmcdKx6aYCvrwvAB_i0IQqWbuitfNf3XDcMfQcuwDcPy2gdbIK1H4Ve5G7CyYGv68nVMgy86Ru09XLq&utm_source=mermaid_live_editor&utm_medium=save_diagram
+                - img "Mermaid Chart" [ref=e31]
+                - text: Save diagram
+        - generic [ref=e34]:
+          - generic [ref=e36]:
+            - generic [ref=e37]:
+              - toolbar [ref=e38] [cursor=pointer]:
+                - list [ref=e40]:
+                  - tab "Code" [ref=e41]:
+                    - img
+                    - text: Code
+                  - separator [ref=e43]
+                  - tab "Config" [ref=e44]:
+                    - img
+                    - text: Config
+                - link "Docs" [ref=e45]:
+                  - /url: https://mermaid.js.org/syntax/flowchart.html
+                  - img
+                  - text: Docs
+              - code [ref=e50]:
+                - generic [ref=e51]:
+                  - generic [ref=e54]:
+                    - generic [ref=e57]: "1"
+                    - generic [ref=e59]: "2"
+                    - generic [ref=e61]: "3"
+                    - generic [ref=e63]: "4"
+                    - generic [ref=e65]: "5"
+                    - generic [ref=e67]: "6"
+                  - generic [ref=e81]:
+                    - generic [ref=e83]: flowchart TD
+                    - generic [ref=e85]: A[Christmas] -->|Get money| B(Go shopping)
+                    - generic [ref=e87]: "B --> C{Let me think}"
+                    - generic [ref=e89]: C -->|One| D[Laptop]
+                    - generic [ref=e91]: C -->|Two| E[iPhone]
+                    - generic [ref=e93]: C -->|Three| F[fa:fa-car Car]
+                  - textbox "Editor content" [ref=e96]: "flowchart TD A[Christmas] -->|Get money| B(Go shopping) B --> C{Let me think} C -->|One| D[Laptop] C -->|Two| E[iPhone] C -->|Three| F[fa:fa-car Car]"
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - toolbar [ref=e99] [cursor=pointer]:
+                  - menubar [ref=e100]:
+                    - img [ref=e101]
+                    - text: Sample Diagrams
+                  - img [ref=e103]
+                - generic [ref=e106]:
+                  - button "Flowchart" [ref=e107]
+                  - button "Class" [ref=e108]
+                  - button "Sequence" [ref=e109]
+                  - button "Entity Relationship" [ref=e110]
+                  - button "State" [ref=e111]
+                  - button "Mindmap" [ref=e112]
+                  - button "Architecture" [ref=e113]
+                  - button "Block" [ref=e114]
+                  - button "C4" [ref=e115]
+                  - button "Gantt" [ref=e116]
+                  - button "Git" [ref=e117]
+                  - button "Ishikawa" [ref=e118]
+                  - button "Kanban" [ref=e119]
+                  - button "Packet" [ref=e120]
+                  - button "Pie" [ref=e121]
+                  - button "Quadrant" [ref=e122]
+                  - button "Radar" [ref=e123]
+                  - button "Requirement" [ref=e124]
+                  - button "Sankey" [ref=e125]
+                  - button "Timeline" [ref=e126]
+                  - button "TreeView" [ref=e127]
+                  - button "Treemap" [ref=e128]
+                  - button "User Journey" [ref=e129]
+                  - button "Venn" [ref=e130]
+                  - button "Wardley Maps" [ref=e131]
+                  - button "XY" [ref=e132]
+                  - button "ZenUML" [ref=e133]
+              - toolbar [ref=e135] [cursor=pointer]:
+                - menubar [ref=e136]:
+                  - img [ref=e137]
+                  - text: Actions
+          - separator [ref=e139]
+          - generic [ref=e140]:
+            - button "Mermaid Chart Edit visually" [ref=e144]:
+              - link "Mermaid Chart Edit visually" [ref=e146] [cursor=pointer]:
+                - /url: https://mermaid.ai/app/plugin/save?state=pako:eNpVjU1Pg0AURf_K5K00oU2x5WsWJha0mya66Ero4qU8GCLMkGFIrcB_d2hj1FnNzT3nvgFOKifgUNTqfBKoDTskmWT2PaWx0FVnGuyObLF4HHdkWKMkXUa2vdsp1gnVtpUs72_8doZYPOxnjJgRlfyYblV89V8ljSxJ99ga1R7_NoezGtlzWr0JO_-_EZqs9ZIWyAtcnFCzGPURHCh1lQM3uicHGtINzhGGWc7ACGooA26_ORXY1yaDTE5Wa1G-K9X8mFr1pQA7XXc29W2OhpIKS42_CMmcdKx6aYCvrwvAB_i0IQqWbuitfNf3XDcMfQcuwDcPy2gdbIK1H4Ve5G7CyYGv68nVMgy86Ru09XLq&utm_source=mermaid_live_editor&utm_medium=visual_edit&utm_campaign=visual_1
+                - img "Mermaid Chart" [ref=e147]
+                - text: Edit
+                - generic [ref=e148]: visually
+            - generic [ref=e150]:
+              - button "Reset view" [ref=e151]:
+                - img
+              - separator [ref=e152]
+              - button [ref=e153]:
+                - img
+              - button [ref=e154]:
+                - img
+              - separator [ref=e155]
+              - link "Full Screen" [ref=e156] [cursor=pointer]:
+                - /url: /view#pako:eNpVjU1Pg0AURf_K5K00oU2x5WsWJha0mya66Ero4qU8GCLMkGFIrcB_d2hj1FnNzT3nvgFOKifgUNTqfBKoDTskmWT2PaWx0FVnGuyObLF4HHdkWKMkXUa2vdsp1gnVtpUs72_8doZYPOxnjJgRlfyYblV89V8ljSxJ99ga1R7_NoezGtlzWr0JO_-_EZqs9ZIWyAtcnFCzGPURHCh1lQM3uicHGtINzhGGWc7ACGooA26_ORXY1yaDTE5Wa1G-K9X8mFr1pQA7XXc29W2OhpIKS42_CMmcdKx6aYCvrwvAB_i0IQqWbuitfNf3XDcMfQcuwDcPy2gdbIK1H4Ve5G7CyYGv68nVMgy86Ru09XLq
+                - img
+            - generic [ref=e158]:
+              - generic [ref=e159]: v11.14.0
+              - button "Privacy & Security" [ref=e160]:
+                - button [ref=e161]:
+                  - img
+              - separator [ref=e162]
+              - button "Switch to dark theme" [ref=e163]:
+                - generic [ref=e164]:
+                  - generic [ref=e165]:
+                    - img
+                  - generic [ref=e166]:
+                    - img
+            - generic [ref=e168]:
+              - button "Hand-Drawn" [ref=e169]:
+                - img
+              - button "Background Grid" [pressed] [ref=e170]:
+                - img
+  - generic [ref=e172]:
+    - alert
+    - alert
