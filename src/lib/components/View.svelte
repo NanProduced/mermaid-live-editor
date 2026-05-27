@@ -2,10 +2,18 @@
   import type { State, ValidatedState } from '$/types';
   import { recordRenderTime, shouldRefreshView } from '$/util/autoSync';
   import { render as renderDiagram } from '$/util/mermaid';
+  import { matchSvgToNodeId, parseNodes } from '$/util/nodeParser';
+  import {
+    contextMenuRequest,
+    cursorNodeId,
+    hoveredNodeId,
+    navigationRequest
+  } from '$/util/nodeSyncStore';
   import { PanZoomState } from '$/util/panZoom';
   import { inputStateStore, stateStore, updateCodeStore } from '$/util/state';
   import { saveStatistics } from '$/util/stats';
   import FontAwesome, { mayContainFontAwesome } from '$lib/components/FontAwesome.svelte';
+  import NodeContextMenu from '$lib/components/NodeContextMenu.svelte';
   import uniqueID from 'lodash-es/uniqueId';
   import type { MermaidConfig } from 'mermaid';
   import { mode } from 'mode-watcher';
@@ -25,6 +33,123 @@
   let panZoom = true;
   let manualUpdate = true;
   let waitForFontAwesomeToLoad: FontAwesome['waitForFontAwesomeToLoad'] | undefined = $state();
+
+  // Node linking state
+  let svgNodeMap = new Map<string, SVGElement>(); // nodeId -> SVG element
+  let knownNodeIds: string[] = [];
+  let highlightedSvgNodeId: string | null = null;
+
+  /**
+   * Walk the rendered SVG to build the nodeId → SVG element map.
+   * Event handlers are attached to the container (event delegation) rather
+   * than individual elements, making them robust against Mermaid DOM changes.
+   */
+  const setupNodeInteractions = () => {
+    if (!container) return;
+
+    const nodes = parseNodes(code);
+    knownNodeIds = nodes.map((n) => n.id);
+    svgNodeMap.clear();
+
+    const nodeElements = container.querySelectorAll<SVGGElement>('g.node');
+    for (const el of nodeElements) {
+      const svgId = el.id;
+      const nodeId = matchSvgToNodeId(svgId, knownNodeIds);
+      if (nodeId) {
+        svgNodeMap.set(nodeId, el as unknown as SVGElement);
+        (el as unknown as SVGElement).style.cursor = 'pointer';
+      }
+    }
+  };
+
+  /**
+   * Walk up from an event target to find the enclosing g.node, then resolve
+   * its SVG element ID to a source-code node ID.
+   */
+  const getNodeIdFromElement = (target: EventTarget | null): string | null => {
+    if (!target || !(target instanceof Element)) return null;
+    const nodeGroup = target.closest('g.node');
+    if (!nodeGroup?.id) return null;
+    return matchSvgToNodeId(nodeGroup.id, knownNodeIds);
+  };
+
+  /** Event-delegation handler for mouseover/mouseout on the container */
+  const handleContainerHover = (e: MouseEvent) => {
+    if (!container) return;
+    const nodeId = getNodeIdFromElement(e.target);
+
+    if (e.type === 'mouseover') {
+      if (nodeId) hoveredNodeId.set(nodeId);
+    } else {
+      // mouseout: only clear if the new target is outside the current node group
+      const relatedTarget = e.relatedTarget as Element | null;
+      const currentNodeGroup = relatedTarget?.closest('g.node');
+      const currentNodeId = currentNodeGroup?.id
+        ? matchSvgToNodeId(currentNodeGroup.id, knownNodeIds)
+        : null;
+      if (currentNodeId !== nodeId) {
+        hoveredNodeId.set(null);
+      }
+    }
+  };
+
+  /** Event-delegation handler for click on the container */
+  const handleContainerClick = (e: MouseEvent) => {
+    const nodeId = getNodeIdFromElement(e.target);
+    if (!nodeId) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    const nodes = parseNodes(code);
+    const node = nodes.find((n) => n.id === nodeId);
+    if (node) {
+      navigationRequest.set({ line: node.line, column: node.column, nodeId });
+    }
+  };
+
+  /** Event-delegation handler for contextmenu on the container */
+  const handleContainerContextMenu = (e: MouseEvent) => {
+    const nodeId = getNodeIdFromElement(e.target);
+    if (!nodeId) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+    contextMenuRequest.set({
+      nodeId,
+      x: e.clientX,
+      y: e.clientY
+    });
+  };
+
+  /** Highlight a node in the preview based on cursorNodeId */
+  const updatePreviewHighlight = (nodeId: string | null) => {
+    // Remove old highlight
+    if (highlightedSvgNodeId) {
+      const oldEl = svgNodeMap.get(highlightedSvgNodeId);
+      if (oldEl) {
+        oldEl.classList.remove('node-linked-highlight');
+      }
+    }
+
+    highlightedSvgNodeId = nodeId;
+
+    // Add new highlight
+    if (nodeId) {
+      const el = svgNodeMap.get(nodeId);
+      if (el) {
+        el.classList.add('node-linked-highlight');
+      }
+    }
+  };
+
+  // Subscribe to cursorNodeId to update preview highlight
+  $effect(() => {
+    const unsub = cursorNodeId.subscribe((nodeId) => {
+      updatePreviewHighlight(nodeId);
+    });
+    return unsub;
+  });
 
   // Set up panZoom state observer to update the store when pan/zoom changes
   const setupPanZoomObserver = () => {
@@ -118,6 +243,8 @@
           if (state.panZoom) {
             handlePanZoom(state, graphDiv);
           }
+          // Setup node interaction handlers after rendering
+          setupNodeInteractions();
         }
         if (view?.parentElement && scroll) {
           view.parentElement.scrollTop = scroll;
@@ -149,12 +276,26 @@
 </script>
 
 <FontAwesome bind:waitForFontAwesomeToLoad />
+<NodeContextMenu />
 
 <div
   id="view"
   bind:this={view}
   class={['h-full w-full', shouldShowGrid && `grid-bg-${$mode}`, error && 'opacity-50']}>
-  <div id="container" bind:this={container} class="h-full overflow-auto"></div>
+  <!-- svelte-ignore a11y_no_static_element_interactions -->
+  <!-- svelte-ignore a11y_click_events_have_key_events -->
+  <!-- svelte-ignore a11y_mouse_events_have_key_events -->
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+  <div
+    id="container"
+    bind:this={container}
+    class="h-full overflow-auto"
+    role="application"
+    aria-label="Mermaid diagram preview"
+    onmouseovercapture={handleContainerHover}
+    onmouseoutcapture={handleContainerHover}
+    onclickcapture={handleContainerClick}
+    oncontextmenucapture={handleContainerContextMenu}></div>
 </div>
 
 <style>
@@ -166,5 +307,20 @@
   .grid-bg-dark {
     background-size: 30px 30px;
     background-image: radial-gradient(circle, #46464646 2px, #0000 2px);
+  }
+
+  /* Highlight for nodes linked from the editor cursor position */
+  :global(.node-linked-highlight) {
+    filter: drop-shadow(0 0 6px hsl(340 100% 44% / 0.7))
+      drop-shadow(0 0 12px hsl(340 100% 44% / 0.4));
+  }
+
+  :global(.node-linked-highlight rect),
+  :global(.node-linked-highlight circle),
+  :global(.node-linked-highlight ellipse),
+  :global(.node-linked-highlight polygon),
+  :global(.node-linked-highlight path.node-shape) {
+    stroke: hsl(340 100% 44%) !important;
+    stroke-width: 2.5px !important;
   }
 </style>
