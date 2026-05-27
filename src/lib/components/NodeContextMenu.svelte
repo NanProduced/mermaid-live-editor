@@ -1,7 +1,7 @@
 <script lang="ts">
   import { coordinationStore } from '$/util/coordinationStore';
   import { inputStateStore, updateCode } from '$/util/state';
-  import { renameNode, changeNodeColor, deleteNode } from '$/util/sourceEditor';
+  import { renameNodeLabel, changeNodeColor, deleteNode } from '$/util/sourceEditor';
   import { cn } from '$lib/utils.js';
   import { onMount } from 'svelte';
 
@@ -20,9 +20,11 @@
     const nodeId = contextMenu.nodeId;
     if (!nodeId) return;
     const currentCode = $inputStateStore.code;
-    const newName = prompt(`Rename node "${nodeId}" to:`, nodeId);
-    if (newName && newName !== nodeId) {
-      const newCode = renameNode(currentCode, nodeId, newName);
+    const parsed = $coordinationStore.parsedSource;
+    const currentLabel = parsed?.nodes.get(nodeId)?.label ?? nodeId;
+    const newLabel = prompt(`Rename "${nodeId}" label to:`, currentLabel);
+    if (newLabel && newLabel !== currentLabel) {
+      const newCode = renameNodeLabel(currentCode, nodeId, newLabel);
       updateCode(newCode);
     }
     close();

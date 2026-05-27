@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { renameNode, changeNodeColor, deleteNode } from './sourceEditor';
+import { renameNode, renameNodeLabel, changeNodeColor, deleteNode } from './sourceEditor';
 
 const sampleCode = `flowchart TD
     A[Christmas] -->|Get money| B(Go shopping)
@@ -47,6 +47,33 @@ describe('renameNode', () => {
     const result = renameNode(code, 'B', 'Y');
     expect(result).toContain('Y[End]');
     expect(result).toContain('A[Start] --> Y');
+  });
+});
+
+describe('renameNodeLabel', () => {
+  it('renames label of a rect node', () => {
+    const result = renameNodeLabel(sampleCode, 'A', 'New Year');
+    expect(result).toContain('A[New Year]');
+    expect(result).not.toContain('A[Christmas]');
+    expect(result).toContain('B(Go shopping)');
+  });
+
+  it('renames label of a rounded node', () => {
+    const result = renameNodeLabel(sampleCode, 'B', 'Browse shops');
+    expect(result).toContain('B(Browse shops)');
+    expect(result).not.toContain('B(Go shopping)');
+  });
+
+  it('renames label of a diamond node', () => {
+    const result = renameNodeLabel(sampleCode, 'C', 'Decide');
+    expect(result).toContain('C{Decide}');
+    expect(result).not.toContain('C{Let me think}');
+  });
+
+  it('does not change the node ID', () => {
+    const result = renameNodeLabel(sampleCode, 'A', 'New Year');
+    expect(result).toContain('A[New Year]');
+    expect(result).toContain('A[New Year] -->|Get money| B');
   });
 });
 
@@ -98,5 +125,25 @@ describe('deleteNode', () => {
     const result = deleteNode(sampleCode, 'D');
     expect(result).not.toContain('C -->|One| D[Laptop]');
     expect(result).toContain('C -->|Two| E[iPhone]');
+  });
+
+  it('preserves other nodes on same line when deleting middle node', () => {
+    const code = `flowchart TD
+    A[Start] --> B[Middle] --> C[End]`;
+    const result = deleteNode(code, 'B');
+    expect(result).toContain('A[Start]');
+    expect(result).toContain('C[End]');
+    expect(result).not.toContain('B[Middle]');
+    expect(result).toContain('A[Start] --> C[End]');
+  });
+
+  it('preserves first and last nodes when deleting middle of chain', () => {
+    const code = `flowchart TD
+    A[First] --> B[Second] --> C[Third] --> D[Fourth]`;
+    const result = deleteNode(code, 'C');
+    expect(result).toContain('A[First]');
+    expect(result).toContain('B[Second]');
+    expect(result).toContain('D[Fourth]');
+    expect(result).not.toContain('C[Third]');
   });
 });

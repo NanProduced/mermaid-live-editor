@@ -88,12 +88,14 @@
   const applyNodeHighlight = (nodeId: string | null) => {
     clearNodeHighlight();
     if (nodeId && container) {
-      const nodeEl =
-        container.querySelector(`[id*="flowchart-${nodeId}-"]`) ??
-        container.querySelector(`[id*="-${nodeId}-"]`);
-      if (nodeEl) {
-        nodeEl.classList.add('mermaid-node-highlight');
-        lastHighlightedNode = nodeEl;
+      const allNodes = container.querySelectorAll('g.node');
+      for (const nodeEl of allNodes) {
+        const extractedId = getNodeIdFromSvgElement(nodeEl);
+        if (extractedId === nodeId) {
+          nodeEl.classList.add('mermaid-node-highlight');
+          lastHighlightedNode = nodeEl;
+          break;
+        }
       }
     }
   };

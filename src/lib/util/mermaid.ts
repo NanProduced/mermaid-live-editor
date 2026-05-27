@@ -58,7 +58,10 @@ export function getNodeIdFromSvgElement(el: Element): string | null {
   }
 
   const id = el.id;
-  const match = id.match(/flowchart-([A-Za-z_]\w*)-\d+$/);
+  // With deterministicIDSeed, IDs look like: flowchart-mermaid-live-editor-A-0
+  // Without seed: flowchart-A-0
+  // Match the node ID segment before the final numeric suffix
+  const match = id.match(/flowchart-(?:[\w-]+-)?([A-Za-z_]\w*)-\d+$/);
   if (match) {
     return match[1];
   }
