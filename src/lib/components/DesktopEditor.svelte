@@ -3,6 +3,14 @@
   import { env } from '$/util/env';
   import { stateStore, urlsStore } from '$/util/state';
   import { logMermaidChartClick } from '$/util/stats';
+  import {
+    editorActiveNodeId,
+    findNodeAtLine,
+    nodeMap,
+    previewHoverNodeId,
+    selectedNodeId,
+    updateNodeMapFromCode
+  } from '$/util/nodeLinker';
   import { AIPromptViewZoneManager } from '$lib/util/AIPromptViewZoneManager';
   import { initEditor } from '$lib/util/monacoExtra';
   import { errorDebug } from '$lib/util/util';
@@ -11,6 +19,7 @@
   import monacoEditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker';
   import monacoJsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker';
   import { onMount } from 'svelte';
+  import { get } from 'svelte/store';
   import AIPromptPopup from './AIPromptPopup.svelte';
 
   const { onUpdate }: EditorProps = $props();
@@ -30,6 +39,7 @@
   let showPopup = $state(false);
   let popupPosition = $state({ top: 0, lineNumber: 0 });
   let decorationsCollection: monaco.editor.IEditorDecorationsCollection | undefined;
+  let nodeHighlightDecorations: monaco.editor.IEditorDecorationsCollection | undefined;
   let input = $state('');
   let lastMouseLine = 0;
   const aiPromptManager = new AIPromptViewZoneManager();
@@ -120,6 +130,7 @@
     editor = monaco.editor.create(divElement, editorOptions);
     aiPromptManager.setEditor(editor);
     decorationsCollection = editor.createDecorationsCollection([]);
+    nodeHighlightDecorations = editor.createDecorationsCollection([]);
 
     editor.onMouseDown((e) => {
       const isGutter = e.target.type === monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN;
@@ -139,6 +150,25 @@
       onUpdate(currentText);
     });
 
+    // Track cursor position to determine which node is active in the editor
+    const handleCursorChange = () => {
+      if (!editor) return;
+      if (editor.getModel()?.id !== mermaidModel.id) {
+        editorActiveNodeId.set(null);
+        return;
+      }
+      const position = editor.getPosition();
+      if (!position) {
+        editorActiveNodeId.set(null);
+        return;
+      }
+      const code = mermaidModel.getValue();
+      const nodeId = findNodeAtLine(code, position.lineNumber);
+      editorActiveNodeId.set(nodeId);
+    };
+
+    editor.onDidChangeCursorPosition(handleCursorChange);
+
     const unsubscribeState = stateStore.subscribe(({ errorMarkers, editorMode, code, mermaid }) => {
       if (!editor) {
         return;
@@ -154,6 +184,7 @@
       // Clear decorations if not in 'code' mode, or if the model changes
       if (editorMode !== 'code' || editor.getModel()?.id !== mermaidModel.id) {
         decorationsCollection?.clear();
+        nodeHighlightDecorations?.clear();
       }
 
       // Update editor text if it's different
@@ -165,9 +196,69 @@
         renderAIPromptGutterGlyphIcon();
       }
 
+      // Update node map for bidirectional linking (only for code mode)
+      if (editorMode === 'code') {
+        updateNodeMapFromCode(code);
+      }
+
       // Display/clear errors
       monaco.editor.setModelMarkers(model, 'mermaid', errorMarkers);
     });
+
+    // Subscribe to preview click → jump editor cursor to node definition
+    let prevSelectedNodeId: string | null = null;
+    const unsubscribeSelected = selectedNodeId.subscribe((nodeId) => {
+      if (!editor || !nodeId || nodeId === prevSelectedNodeId) {
+        prevSelectedNodeId = nodeId;
+        return;
+      }
+      prevSelectedNodeId = nodeId;
+      if (editor.getModel()?.id !== mermaidModel.id) return;
+
+      const nodes = get(nodeMap);
+      const nodeInfo = nodes.get(nodeId);
+      if (!nodeInfo) return;
+
+      editor.revealLineInCenter(nodeInfo.line);
+      editor.setPosition({ lineNumber: nodeInfo.line, column: nodeInfo.labelStartCol });
+      editor.focus();
+    });
+
+    // Reactively update highlight decorations when preview hover/selection changes
+    const unsubscribePreviewHover = previewHoverNodeId.subscribe(() => {
+      updateNodeHighlight();
+    });
+    const unsubscribeSelectedForHighlight = selectedNodeId.subscribe(() => {
+      updateNodeHighlight();
+    });
+
+    function updateNodeHighlight(): void {
+      if (!editor) return;
+      if (editor.getModel()?.id !== mermaidModel.id) {
+        nodeHighlightDecorations?.clear();
+        return;
+      }
+
+      const activeNodeId = get(previewHoverNodeId) ?? get(selectedNodeId);
+      if (activeNodeId) {
+        const nodes = get(nodeMap);
+        const nodeInfo = nodes.get(activeNodeId);
+        if (nodeInfo) {
+          nodeHighlightDecorations?.set([
+            {
+              range: new monaco.Range(nodeInfo.line, 1, nodeInfo.line, 1),
+              options: {
+                isWholeLine: true,
+                className: 'mermaid-node-highlight-line',
+                glyphMarginClassName: 'mermaid-node-highlight-glyph'
+              }
+            }
+          ]);
+          return;
+        }
+      }
+      nodeHighlightDecorations?.clear();
+    }
 
     editor.onMouseMove((e) => {
       if (!editor) return;
@@ -205,9 +296,13 @@
     return () => {
       unsubscribeState();
       unsubscribeMode();
+      unsubscribeSelected();
+      unsubscribePreviewHover();
+      unsubscribeSelectedForHighlight();
       resizeObserver.disconnect();
       jsonModel.dispose();
       mermaidModel.dispose();
+      nodeHighlightDecorations?.clear();
       aiPromptManager.destroy();
       editor?.dispose();
     };
@@ -251,5 +346,26 @@
   :global(#editor.mermaid-dark .suggestion-icon) {
     background-color: #2e4d6b;
     background-image: url('/icons/use-chat-dark.svg');
+  }
+
+  /* Node linker: highlight decoration for lines linked to preview nodes */
+  :global(.mermaid-node-highlight-line) {
+    background-color: rgba(59, 130, 246, 0.08);
+  }
+
+  :global(#editor.mermaid-dark .mermaid-node-highlight-line) {
+    background-color: rgba(96, 165, 250, 0.12);
+  }
+
+  :global(.mermaid-node-highlight-glyph) {
+    width: 8px !important;
+    height: 8px !important;
+    margin: 6px 4px;
+    background-color: #3b82f6;
+    border-radius: 50%;
+  }
+
+  :global(#editor.mermaid-dark .mermaid-node-highlight-glyph) {
+    background-color: #60a5fa;
   }
 </style>
