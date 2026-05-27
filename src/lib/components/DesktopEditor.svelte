@@ -1,6 +1,12 @@
 <script lang="ts">
   import type { EditorProps } from '$/types';
   import { env } from '$/util/env';
+  import { parseNodes } from '$/util/nodeParser';
+  import {
+    cursorNodeId,
+    hoveredNodeId,
+    navigationRequest
+  } from '$/util/nodeSyncStore';
   import { stateStore, urlsStore } from '$/util/state';
   import { logMermaidChartClick } from '$/util/stats';
   import { AIPromptViewZoneManager } from '$lib/util/AIPromptViewZoneManager';
@@ -30,6 +36,7 @@
   let showPopup = $state(false);
   let popupPosition = $state({ top: 0, lineNumber: 0 });
   let decorationsCollection: monaco.editor.IEditorDecorationsCollection | undefined;
+  let nodeLinkDecorations: monaco.editor.IEditorDecorationsCollection | undefined;
   let input = $state('');
   let lastMouseLine = 0;
   const aiPromptManager = new AIPromptViewZoneManager();
@@ -120,6 +127,73 @@
     editor = monaco.editor.create(divElement, editorOptions);
     aiPromptManager.setEditor(editor);
     decorationsCollection = editor.createDecorationsCollection([]);
+    nodeLinkDecorations = editor.createDecorationsCollection([]);
+
+    // --- Node linking: cursor position → preview highlight ---
+    editor.onDidChangeCursorPosition((e) => {
+      if (editor?.getModel()?.id !== mermaidModel.id) {
+        cursorNodeId.set(null);
+        return;
+      }
+      const model = editor?.getModel();
+      if (!model) return;
+      const codeText = model.getValue();
+      const nodes = parseNodes(codeText);
+      const cursorLine = e.position.lineNumber;
+      // Find node defined on this line
+      const nodeOnLine = nodes.find((n) => n.line === cursorLine);
+      cursorNodeId.set(nodeOnLine?.id ?? null);
+    });
+
+    // --- Node linking: preview hover → editor line highlight ---
+    const unsubHovered = hoveredNodeId.subscribe((nodeId) => {
+      if (!editor || editor.getModel()?.id !== mermaidModel.id) {
+        nodeLinkDecorations?.clear();
+        return;
+      }
+      if (!nodeId) {
+        nodeLinkDecorations?.clear();
+        return;
+      }
+      const model = editor.getModel();
+      if (!model) return;
+      const codeText = model.getValue();
+      const nodes = parseNodes(codeText);
+      const node = nodes.find((n) => n.id === nodeId);
+      if (node) {
+        nodeLinkDecorations?.set([
+          {
+            range: new monaco.Range(node.line, 1, node.line, 1),
+            options: {
+              isWholeLine: true,
+              className: 'node-linked-line',
+              glyphMarginClassName: 'node-linked-glyph',
+              overviewRuler: {
+                color: '#e8347a',
+                position: monaco.editor.OverviewRulerLane.Left
+              }
+            }
+          }
+        ]);
+        // Reveal the line in the editor (without scrolling if already visible)
+        editor.revealLineInCenterIfOutsideViewport(node.line);
+      }
+    });
+
+    // --- Node linking: preview click → editor cursor jump ---
+    const unsubNavigation = navigationRequest.subscribe((req) => {
+      if (!req || !editor) return;
+      if (editor.getModel()?.id !== mermaidModel.id) {
+        // Switch to mermaid model first
+        editor.setModel(mermaidModel);
+      }
+      const col = req.column !== undefined ? req.column + 1 : 1;
+      editor.setPosition({ lineNumber: req.line, column: col });
+      editor.revealLineInCenter(req.line);
+      editor.focus();
+      // Clear the request after handling
+      navigationRequest.set(null);
+    });
 
     editor.onMouseDown((e) => {
       const isGutter = e.target.type === monaco.editor.MouseTargetType.GUTTER_GLYPH_MARGIN;
@@ -205,6 +279,8 @@
     return () => {
       unsubscribeState();
       unsubscribeMode();
+      unsubHovered();
+      unsubNavigation();
       resizeObserver.disconnect();
       jsonModel.dispose();
       mermaidModel.dispose();
@@ -251,5 +327,17 @@
   :global(#editor.mermaid-dark .suggestion-icon) {
     background-color: #2e4d6b;
     background-image: url('/icons/use-chat-dark.svg');
+  }
+
+  /* Node linking: line highlight when hovering over preview node */
+  :global(.node-linked-line) {
+    background-color: hsl(340 100% 44% / 0.08);
+  }
+
+  :global(.node-linked-glyph) {
+    background-color: hsl(340 100% 44%);
+    width: 4px !important;
+    margin-left: 2px;
+    border-radius: 2px;
   }
 </style>

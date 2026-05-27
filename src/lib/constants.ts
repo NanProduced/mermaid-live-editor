@@ -6,6 +6,13 @@ export const TID = {
   downloadPNG: 'download-PNG',
   downloadSVG: 'download-SVG',
   errorContainer: 'error-container',
+  nodeColorOption: 'node-color-option',
+  nodeContextMenu: 'node-context-menu',
+  nodeMenuColor: 'node-menu-color',
+  nodeMenuDelete: 'node-menu-delete',
+  nodeMenuRename: 'node-menu-rename',
+  nodeRenameConfirm: 'node-rename-confirm',
+  nodeRenameInput: 'node-rename-input',
   themeToggleButton: 'theme-toggle-button'
 } as const;
 
