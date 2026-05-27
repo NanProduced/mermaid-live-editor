@@ -1,0 +1,58 @@
+[     675ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[     781ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[     858ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    2162ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    2222ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    2272ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    3115ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    3175ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    3215ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    3672ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    3743ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    3800ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    4263ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    4332ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    4385ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    4858ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    4929ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    4981ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    5422ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    5486ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    5546ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    6009ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    6073ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    6121ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    6606ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    6675ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    6727ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    7277ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    7348ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    7393ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    7835ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    7905ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    7957ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    8470ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    8537ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    8590ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    9073ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    9136ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    9192ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[    9697ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[    9767ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[    9821ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[   10286ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[   10354ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[   10410ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[   10899ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[   10970ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[   11026ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[   11479ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[   11544ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[   11596ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[   12091ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[   12157ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[   12209ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[   12668ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89
+[   12727ms] [LOG] Loading '' @ http://localhost:3002/src/lib/util/state.ts:192
+[   12779ms] [LOG] Registration successful, scope is: http://localhost:3002/ @ http://localhost:3002/src/routes/+layout.svelte:42
+[   13348ms] [LOG] [plausible] version {mermaidVersion: 11.14.0} @ http://localhost:3002/src/lib/util/stats.ts:89

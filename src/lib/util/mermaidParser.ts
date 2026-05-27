@@ -94,30 +94,29 @@ export function extractNodeIdFromSvgElement(element: Element): string | null {
   const g = element.closest('g.node');
   if (!g) return null;
   const id = g.getAttribute('id') ?? '';
-  const match = /^\d+-(?:flowchart|graph)-(.+)$/.exec(id);
+  const match = /-(?:flowchart|graph)-(.+?)-\d+$/.exec(id);
   if (match) return match[1];
-  const legacyMatch = /^(?:flowchart|graph)-(.+?)-\d+$/.exec(id);
-  if (legacyMatch) return legacyMatch[1];
+  const simpleMatch = /^(?:flowchart|graph)-(.+?)-\d+$/.exec(id);
+  if (simpleMatch) return simpleMatch[1];
   const dataId = g.getAttribute('data-id');
   if (dataId) return dataId;
-  const classMatch = /\bnode-(\w+)\b/.exec(g.getAttribute('class') ?? '');
-  if (classMatch) return classMatch[1];
   return null;
 }
 
 export function findNodeSvgElement(container: HTMLElement, nodeId: string): Element | null {
-  const escapedId = CSS.escape(nodeId);
-  const selectors = [
-    `g.node[id$="-flowchart-${escapedId}"]`,
-    `g.node[id$="-graph-${escapedId}"]`,
-    `g.node[id^="flowchart-${escapedId}-"]`,
-    `g.node[id^="graph-${escapedId}-"]`,
-    `g.node[data-id="${escapedId}"]`
-  ];
-  for (const sel of selectors) {
-    const el = container.querySelector(sel);
-    if (el) return el;
+  const nodes = container.querySelectorAll('g.node[id]');
+  const suffix = `-flowchart-${nodeId}-`;
+  const altSuffix = `-graph-${nodeId}-`;
+  for (const node of nodes) {
+    const id = node.getAttribute('id') ?? '';
+    if (id.includes(suffix) || id.includes(altSuffix)) return node;
   }
+  const byPrefix = container.querySelector(
+    `g.node[id^="flowchart-${CSS.escape(nodeId)}-"]`
+  );
+  if (byPrefix) return byPrefix;
+  const byData = container.querySelector(`g.node[data-id="${CSS.escape(nodeId)}"]`);
+  if (byData) return byData;
   return null;
 }
 

@@ -16,7 +16,7 @@ test.describe('Preview-Code Linkage', () => {
     await page.waitForTimeout(1500);
 
     const container = page.getByTestId(TID.previewContainer);
-    const nodeB = container.locator('g.node[id$="-flowchart-B"]');
+    const nodeB = container.locator('g.node[id*="-flowchart-B-"]');
     await expect(nodeB).toBeVisible({ timeout: 10_000 });
     await nodeB.click();
 
@@ -67,7 +67,7 @@ test.describe('Preview-Code Linkage', () => {
     await page.waitForTimeout(1500);
 
     const container = page.getByTestId(TID.previewContainer);
-    const nodeA = container.locator('g.node[id$="-flowchart-A"]');
+    const nodeA = container.locator('g.node[id*="-flowchart-A-"]');
     await expect(nodeA).toBeVisible({ timeout: 10_000 });
 
     await nodeA.click({ button: 'right' });
@@ -104,7 +104,7 @@ test.describe('Preview-Code Linkage', () => {
     await page.waitForTimeout(1500);
 
     const container = page.getByTestId(TID.previewContainer);
-    const nodeA = container.locator('g.node[id$="-flowchart-A"]');
+    const nodeA = container.locator('g.node[id*="-flowchart-A-"]');
     await expect(nodeA).toBeVisible({ timeout: 10_000 });
 
     await nodeA.click({ button: 'right' });
